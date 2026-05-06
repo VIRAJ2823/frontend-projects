@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Discipline Engine</title> 
+    <link rel="stylesheet" href="styles6.css">
+</head>
+<body>
+
+    <main>
+        <h1>The Discipline Engine</h1>
+        
+
+        <section class="day-tracker">
+            <p>Today is: <span id="current-date-display"></span></p>
+            <p>Missions Completed Today: <span id="daily-complete-count">0</span></p>
+        </section>
+        
+        <p id="motivation-line">The Cog Turns: Log your missions, or time is lost to the void.</p>
+
+        <section class="xp-tracker">
+            <div class="level-info">
+                <h2>Progress: <span id="level-display">1</span></h2>
+                <button id="reset-button" class="action-button">Start New Campaign</button> 
+            </div>
+            
+            <div id="xp-bar-container" class="xp-bar-container">
+                <div id="xp-bar-fill" class="xp-bar-fill"></div> 
+                <span id="xp-value-text" class="xp-value-text">0 / 10 XP</span>
+            </div>
+        </section>
+
+        <form id="new-quest-form" class="quest-input-form">
+            
+            <input 
+                type="text" 
+                id="task-input" 
+                placeholder="Document new mission objective..." 
+                required
+            />
+
+            <div class="effort-selector">
+                <label for="effort-select">Difficulty (XP):</label>
+                <select id="effort-select" required>
+                    <option value="1">1 (Scroll)</option>
+                    <option value="2">2 (Minor)</option>
+                    <option value="3" selected>3 (Standard)</option>
+                    <option value="4">4 (Major)</option>
+                    <option value="5">5 (Legendary)</option>
+                </select>
+            </div>
+            
+            <button type="submit">Log Mission</button>
+        </form>
+
+        <section class="quest-list-section">
+            <h2>Active Missions</h2>
+            <ul id="quest-list-container" class="quest-list">
+            </ul>
+        </section>
+        
+        <section class="past-progress-section">
+            <h2>Progress Streak</h2>
+            <ul id="history-list-container" class="history-list">
+            </ul>
+        </section>
+
+    </main>
+    
+    <script src="list.js"></script>
+</body>
+</html>

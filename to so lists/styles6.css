@@ -1,0 +1,278 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 40px 10px;
+}
+
+main {
+    width: 100%;
+    max-width: 650px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #3498db;
+    margin-bottom: 20px;
+    font-size: 2.2rem;
+}
+
+#motivation-line {
+    text-align: center;
+    font-style: italic;
+    color: #e67e22; /* Orange/Copper color to match the "Engine" feel */
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px dashed #e67e22;
+    background-color: #fffaf7;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.day-tracker {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fcfcfc;
+    border-radius: 8px;
+    border: 1px dashed #ddd;
+    display: block;
+    font-size: 1.1rem;
+}
+
+#current-date-display, #daily-complete-count {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.xp-tracker {
+    margin-bottom: 30px;
+    padding: 15px;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+}
+
+.level-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#level-display {
+    font-weight: bold;
+    color: #e74c3c;
+    font-size: 1.5rem;
+}
+
+#reset-button {
+    padding: 8px 15px;
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+#reset-button:hover {
+    background-color: #e67e22;
+}
+
+#xp-bar-container {
+    height: 25px;
+    background-color: #bdc3c7;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+#xp-bar-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #2ecc71;
+    border-radius: 12px;
+    transition: width 0.5s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#xp-value-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.9rem;
+    z-index: 2;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.quest-input-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+#task-input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.effort-selector {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#effort-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.quest-input-form button {
+    padding: 10px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.quest-input-form button:hover {
+    background-color: #2980b9;
+}
+
+.quest-list-section h2 {
+    color: #7f8c8d;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+#quest-list-container {
+    list-style: none;
+}
+
+.quest-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.quest-item:last-child {
+    border-bottom: none;
+}
+
+.complete-checkbox {
+    margin-right: 15px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.task-text {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+.task-effort-xp {
+    font-weight: bold;
+    color: #e67e22;
+    margin-right: 15px;
+    padding: 2px 8px;
+    border: 1px solid #e67e22;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.quest-item.completed {
+    background-color: #f7f9fb;
+    color: #b9c2c6;
+}
+
+.quest-item.completed .task-text {
+    text-decoration: line-through;
+}
+
+.quest-item.completed .task-effort-xp {
+    color: #b9c2c6;
+    border-color: #b9c2c6;
+}
+
+.past-progress-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.past-progress-section h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+#history-list-container {
+    list-style: none;
+    padding-left: 0;
+}
+
+.history-item {
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    border-left: 5px solid #3498db;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+}
+
+.history-item strong {
+    color: #2980b9;
+}
