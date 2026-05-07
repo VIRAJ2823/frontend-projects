@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Mood-Based Dashboard 🎵🌤️</title>
+    <link rel="stylesheet" href="satyles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="theme-default">
+    <div id="dashboard-container">
+
+        <header id="weather-display">
+            <h1 class="dashboard-title">My Vibe Dashboard</h1>
+            <div id="weather-info">
+                <p id="city-name">Loading Location...</p>
+                <div class="weather-details">
+                    <span id="temperature">--°C</span>
+                    <span id="weather-icon">☁️</span>
+                    <span id="weather-description">Clear Sky</span>
+                </div>
+            </div>
+            <div id="weather-animation-area">
+                </div>
+        </header>
+
+        <main id="content-area">
+            <section id="mood-selector-section">
+                <h2>How are you feeling right now?</h2>
+                <div id="mood-buttons">
+                    <button class="mood-btn" data-mood="happy">😊 Happy</button>
+                    <button class="mood-btn" data-mood="sad">😟 Sad</button>
+                    <button class="mood-btn" data-mood="relaxed">😌 Relaxed</button>
+                    <button class="mood-btn" data-mood="energetic">🚀 Energetic</button>
+                </div>
+            </section>
+
+            <section id="music-recommendation-section">
+                <h2>Your Music Recommendation 🎶</h2>
+                <div id="playlist-container">
+                    <iframe id="music-player"
+                        width="100%"
+                        height="315"
+                        src=""
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        title="Recommended Playlist">
+                    </iframe>
+                    <p id="recommendation-message">Select a mood and check the weather!</p>
+                </div>
+            </section>
+
+            <section id="bonus-quote-section">
+                <p id="daily-quote">“Music is the strongest form of magic.”</p>
+            </section>
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
