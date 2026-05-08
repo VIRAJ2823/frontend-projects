@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DARE App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root {
+  --c1: #F08080;
+  --c2: #F4978E;
+  --c3: #F8AD9D;
+  --c4: #FBC4AB;
+  --c5: #FFDAB9;
+  --bg: #FFF8F5;
+  --white: #FFFFFF;
+  --text: #2D1810;
+  --text2: #7A4A3A;
+  --text3: #B07060;
+  --border: rgba(240,128,128,0.15);
+  --shadow: 0 8px 40px rgba(240,128,128,0.18);
+  --shadow-sm: 0 2px 16px rgba(240,128,128,0.1);
+  --r: 20px;
+  --r-sm: 12px;
+  --font-d: 'Playfair Display', serif;
+  --font-b: 'DM Sans', sans-serif;
+  --font-m: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.16,1,0.3,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: var(--font-b);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; flex-direction: column; animation: fadeSlide 0.35s var(--ease); }
+.screen.active { display: flex; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,248,245,0.93);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 40px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-logo { font-family: var(--font-d); font-size: 1.7rem; color: var(--c1); letter-spacing: 0.04em; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-badge {
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white; border-radius: 8px; padding: 4px 12px;
+  font-size: 0.7rem; font-family: var(--font-m); letter-spacing: 0.1em;
+}
+.topbar-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c4));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; cursor: pointer;
+  border: 2px solid var(--white); box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+.topbar-avatar:hover { transform: scale(1.08); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--white); border-top: 1px solid var(--border);
+  display: flex; padding: 10px 0 14px;
+  box-shadow: 0 -4px 24px rgba(240,128,128,0.08);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  cursor: pointer; padding: 4px 8px; border-radius: 12px;
+  transition: background 0.2s ease;
+}
+.nav-item:hover { background: rgba(240,128,128,0.06); }
+.nav-icon { font-size: 1.3rem; transition: transform 0.3s var(--ease); }
+.nav-item.active .nav-icon { transform: scale(1.2); }
+.nav-label { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); transition: color 0.3s ease; }
+.nav-item.active .nav-label { color: var(--c1); }
+.nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--c1); opacity: 0; transition: opacity 0.3s ease; }
+.nav-item.active .nav-dot { opacity: 1; }
+
+/* ── PAGE WRAPPER ── */
+.page-wrap { flex: 1; max-width: 960px; width: 100%; margin: 0 auto; padding: 40px 40px 100px; }
+
+/* ── TYPOGRAPHY ── */
+.page-title { font-family: var(--font-d); font-size: clamp(1.9rem,4vw,2.6rem); color: var(--text); line-height: 1.1; margin-bottom: 6px; }
+.page-sub   { color: var(--text3); font-size: 0.92rem; font-weight: 300; margin-bottom: 36px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 26px; border: none; border-radius: 100px;
+  font-family: var(--font-b); font-size: 0.93rem; font-weight: 600;
+  cursor: pointer; position: relative; overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: linear-gradient(135deg, var(--c1), var(--c2)); color: white; box-shadow: 0 6px 20px rgba(240,128,128,0.35); }
+.btn-primary:hover { box-shadow: 0 10px 28px rgba(240,128,128,0.5); transform: translateY(-2px); }
+.btn-secondary { background: var(--white); color: var(--c1); border: 1.5px solid var(--c1); }
+.btn-secondary:hover { background: rgba(240,128,128,0.04); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1.5px solid var(--border); }
+.btn-ghost:hover { border-color: var(--c3); }
+.btn-danger { background: transparent; color: #c03030; border: 1.5px solid rgba(200,50,50,0.2); }
+.btn-sm  { padding: 8px 18px; font-size: 0.82rem; }
+.btn-full { width: 100%; }
+
+/* ── INPUTS ── */
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--text2); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
+.form-input, .form-textarea, .form-select {
+  width: 100%; padding: 13px 16px;
+  background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r-sm);
+  font-family: var(--font-b); font-size: 0.95rem; color: var(--text); outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--c1); box-shadow: 0 0 0 4px rgba(240,128,128,0.1); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text3); }
+.form-textarea { resize: vertical; min-height: 90px; }
+.form-select { appearance: none; cursor: pointer; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── CARDS ── */
+.card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); padding: 24px; box-shadow: var(--shadow-sm); }
+
+/* ── DIVIDER ── */
+.divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; color: var(--text3); font-size: 0.8rem; }
+.divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 56px 24px; color: var(--text3); }
+.empty-icon  { font-size: 2.8rem; margin-bottom: 14px; opacity: 0.45; }
+.empty-title { font-family: var(--font-d); font-size: 1.25rem; color: var(--text2); margin-bottom: 8px; }
+.empty-sub   { font-size: 0.87rem; font-weight: 300; line-height: 1.6; }
+
+/* ── SECTION HEADER ── */
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.section-title  { font-family: var(--font-d); font-size: 1.25rem; color: var(--text); }
+.section-action { color: var(--c1); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+.section-action:hover { text-decoration: underline; }
+
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; }
+.badge-coral { background: rgba(240,128,128,0.12); color: var(--c1); }
+.badge-peach { background: rgba(248,173,157,0.2); color: #c06040; }
+.badge-warm  { background: rgba(255,218,185,0.4); color: #a07050; }
+.badge-green { background: rgba(64,160,96,0.1); color: #40a060; }
+.badge-red   { background: rgba(200,50,50,0.1); color: #c03030; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(14px);
+  background: var(--text); color: white; padding: 12px 24px; border-radius: 100px;
+  font-size: 0.85rem; font-weight: 500; opacity: 0; pointer-events: none; z-index: 9999;
+  transition: all 0.35s var(--ease); white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RIPPLE ── */
+.rip { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.35); transform: scale(0); animation: ripAnim 0.55s linear; pointer-events: none; }
+@keyframes ripAnim { to { transform: scale(4); opacity: 0; } }
+
+/* ════ LANDING ════ */
+#s-landing {
+  align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #FFF8F5 0%, #FFF0E8 60%, #FFDAB9 100%);
+}
+.landing-inner { max-width: 520px; text-align: center; padding: 48px 24px; width: 100%; }
+.landing-blob {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--c1), var(--c4));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem; margin: 0 auto 28px;
+  box-shadow: 0 16px 50px rgba(240,128,128,0.3);
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.landing-title { font-family: var(--font-d); font-size: clamp(3rem,8vw,5rem); color: var(--text); margin-bottom: 12px; }
+.landing-sub   { color: var(--text3); font-size: 1rem; font-weight: 300; margin-bottom: 44px; line-height: 1.6; }
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.role-card {
+  background: var(--white); border: 1.5px solid var(--border); border-radius: var(--r);
+  padding: 28px 20px; cursor: pointer; text-align: center;
+  transition: all 0.3s var(--ease); box-shadow: var(--shadow-sm);
+}
+.role-card:hover { border-color: var(--c1); box-shadow: 0 12px 40px rgba(240,128,128,0.22); transform: translateY(-4px); }
+.role-emoji { font-size: 2rem; margin-bottom: 10px; }
+.role-name  { font-weight: 700; color: var(--text); font-size: 1rem; margin-bottom: 4px; }
+.role-desc  { color: var(--text3); font-size: 0.78rem; font-weight: 300; }
+
+/* ════ AUTH ════ */
+.auth-screen { align-items: center; justify-content: center; background: linear-gradient(160deg, #FFF8F5, #FFF0E8); }
+.auth-box {
+  background: var(--white); border: 1px solid var(--border); border-radius: 28px;
+  padding: 48px 40px; width: 100%; max-width: 440px;
+  box-shadow: var(--shadow); margin: 24px;
+}
+.auth-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text3); font-size: 0.85rem; font-weight: 500; cursor: pointer; margin-bottom: 28px; transition: color 0.2s; }
+.auth-back:hover { color: var(--c1); }
+.auth-icon  { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg,var(--c1),var(--c2)); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 18px; }
+.auth-title { font-family: var(--font-d); font-size: 1.9rem; color: var(--text); margin-bottom: 6px; }
+.auth-sub   { color: var(--text3); font-size: 0.85rem; font-weight: 300; margin-bottom: 30px; }
+.auth-footer { text-align: center; margin-top: 18px; color: var(--text3); font-size: 0.84rem; }
+.link { color: var(--c1); font-weight: 600; cursor: pointer; }
+.link:hover { text-decoration: underline; }
+.progress-steps { display: flex; gap: 6px; margin-bottom: 26px; }
+.ps-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background 0.4s ease; }
+.ps-dot.done { background: var(--c1); }
+
+/* ════ HOME ════ */
+.home-greeting { margin-bottom: 30px; padding-bottom: 22px; border-bottom: 1px solid var(--border); }
+.home-greeting h1 { font-family: var(--font-d); font-size: 1.9rem; color: var(--text); }
+.home-greeting p  { color: var(--text3); font-size: 0.9rem; margin-top: 4px; }
+
+.stories-row { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 32px; }
+.stories-row::-webkit-scrollbar { display: none; }
+.story-item { flex-shrink: 0; text-align: center; cursor: pointer; }
+.story-ring { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg,var(--c1),var(--c5)); padding: 2.5px; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; transition: transform 0.25s ease; }
+.story-ring:hover { transform: scale(1.08); }
+.story-inner { width: 100%; height: 100%; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+.story-label { font-size: 0.65rem; color: var(--text3); font-weight: 500; }
+
+.dare-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 20px; }
+.dare-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.3s var(--ease), box-shadow 0.3s ease; }
+.dare-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+.dare-cover { height: 130px; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; position: relative; }
+.dc-1 { background: linear-gradient(135deg,var(--c3),var(--c5)); }
+.dc-2 { background: linear-gradient(135deg,var(--c1),var(--c3)); }
+.dc-3 { background: linear-gradient(135deg,var(--c4),var(--c2)); }
+.dare-pill { position: absolute; top:10px; left:10px; background: rgba(255,255,255,0.88); border-radius:100px; padding:3px 10px; font-size:0.62rem; font-family:var(--font-m); color:var(--c1); font-weight:600; }
+.dare-body  { padding: 16px; }
+.dare-title { font-weight: 700; color: var(--text); font-size: 0.9rem; margin-bottom: 4px; }
+.dare-meta  { color: var(--text3); font-size: 0.75rem; margin-bottom: 12px; }
+.dare-btns  { display: flex; gap: 8px; }
+.dare-accept { flex:1; padding:9px; border-radius:100px; border:none; background:linear-gradient(135deg,var(--c1),var(--c2)); color:white; font-family:var(--font-b); font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s ease; }
+.dare-skip   { flex:0.6; padding:9px; border-radius:100px; border:1.5px solid var(--border); background:transparent; color:var(--text2); font-family:var(--font-b); font-size:0.8rem; cursor:pointer; }
+.dare-empty { border: 2px dashed var(--border); border-radius: var(--r); min-height: 200px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; color:var(--text3); }
+.dare-empty .de-i { font-size:2rem; margin-bottom:10px; opacity:0.4; }
+.dare-empty .de-t { font-size:0.83rem; font-weight:300; line-height:1.6; }
+
+/* ════ FRIENDS ════ */
+.search-bar { display:flex; align-items:center; gap:10px; background:var(--white); border:1.5px solid var(--border); border-radius:100px; padding:11px 18px; margin-bottom:26px; transition:border-color 0.3s, box-shadow 0.3s; }
+.search-bar:focus-within { border-color:var(--c1); box-shadow:0 0 0 4px rgba(240,128,128,0.08); }
+.search-bar input { flex:1; border:none; outline:none; font-family:var(--font-b); font-size:0.95rem; color:var(--text); background:transparent; }
+.search-bar input::placeholder { color:var(--text3); }
+
+.add-box { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:22px 24px; margin-bottom:26px; box-shadow:var(--shadow-sm); }
+.add-box h3 { font-weight:700; color:var(--text); margin-bottom:4px; font-size:0.95rem; }
+.add-box p  { color:var(--text3); font-size:0.8rem; margin-bottom:14px; }
+.add-row    { display:flex; gap:10px; }
+.add-row .form-input { flex:1; }
+
+.friends-list { display:flex; flex-direction:column; gap:2px; }
+.friend-row { display:flex; align-items:center; gap:14px; padding:13px 16px; border-radius:var(--r-sm); transition:background 0.2s; cursor:pointer; }
+.friend-row:hover { background:rgba(240,128,128,0.04); }
+.friend-av   { width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,var(--c3),var(--c5)); display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+.friend-info { flex:1; }
+.friend-name   { font-weight:600; color:var(--text); font-size:0.9rem; }
+.friend-handle { color:var(--text3); font-size:0.75rem; }
+.f-btn { padding:7px 16px; border-radius:100px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; font-family:var(--font-b); transition:all 0.2s; }
+.f-follow    { background:var(--c1); color:white; }
+.f-following { background:rgba(240,128,128,0.1); color:var(--c1); }
+
+/* ════ ROOMS ════ */
+.rooms-tabs { display:flex; margin-bottom:22px; border-bottom:1px solid var(--border); }
+.room-tab { padding:10px 20px; font-size:0.85rem; font-weight:600; color:var(--text3); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.25s; }
+.room-tab.active { color:var(--c1); border-bottom-color:var(--c1); }
+
+.create-box { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:26px; margin-bottom:26px; box-shadow:var(--shadow-sm); }
+.create-box h3 { font-family:var(--font-d); font-size:1.2rem; color:var(--text); margin-bottom:4px; }
+.create-box p  { color:var(--text3); font-size:0.82rem; margin-bottom:18px; }
+
+.rooms-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; }
+.room-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow-sm); transition:transform 0.3s var(--ease),box-shadow 0.3s; cursor:pointer; }
+.room-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); }
+.room-cover { height:100px; display:flex; align-items:center; justify-content:center; font-size:2.8rem; }
+.rc-1 { background:linear-gradient(135deg,var(--c3),var(--c5)); }
+.rc-2 { background:linear-gradient(135deg,var(--c1),var(--c3)); }
+.rc-3 { background:linear-gradient(135deg,var(--c4),var(--c2)); }
+.rc-4 { background:linear-gradient(135deg,var(--c5),var(--c4)); }
+.room-body  { padding:16px; }
+.room-name  { font-weight:700; color:var(--text); font-size:0.95rem; margin-bottom:4px; }
+.room-desc  { color:var(--text3); font-size:0.8rem; line-height:1.5; margin-bottom:10px; }
+.room-foot  { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.live-pill  { display:inline-flex; align-items:center; gap:5px; background:rgba(220,50,50,0.1); color:#d03030; padding:3px 10px; border-radius:100px; font-size:0.65rem; font-weight:700; letter-spacing:0.06em; }
+.live-dot   { width:5px; height:5px; border-radius:50%; background:#d03030; animation:blink 1.2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+.room-cnt   { color:var(--text3); font-size:0.75rem; }
+
+/* ════ PROFILE ════ */
+.profile-hero { background:linear-gradient(135deg,var(--c4),var(--c5)); border-radius:var(--r); padding:40px 32px; text-align:center; margin-bottom:22px; position:relative; overflow:hidden; }
+.profile-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 70% 30%,rgba(255,255,255,0.35),transparent 60%); }
+.profile-av    { width:88px; height:88px; border-radius:50%; background:linear-gradient(135deg,var(--c1),var(--c3)); display:flex; align-items:center; justify-content:center; font-size:2.4rem; margin:0 auto 14px; border:4px solid rgba(255,255,255,0.8); box-shadow:var(--shadow); position:relative; z-index:1; }
+.profile-name   { font-family:var(--font-d); font-size:1.8rem; color:var(--text); position:relative; z-index:1; }
+.profile-handle { color:var(--text2); font-size:0.85rem; margin-top:4px; position:relative; z-index:1; }
+.profile-edit-row { margin-top:14px; position:relative; z-index:1; }
+
+.pstats { display:grid; grid-template-columns:repeat(3,1fr); background:var(--white); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-sm); overflow:hidden; margin-bottom:22px; }
+.pstat { padding:20px 12px; text-align:center; border-right:1px solid var(--border); }
+.pstat:last-child { border-right:none; }
+.pstat-n { font-family:var(--font-d); font-size:1.8rem; color:var(--text); }
+.pstat-l { color:var(--text3); font-size:0.65rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin-top:3px; }
+
+.profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.profile-section { background:var(--white); border:1px solid var(--border); border-radius:var(--r); padding:24px; box-shadow:var(--shadow-sm); }
+.profile-section h3 { font-weight:700; color:var(--text2); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; }
+.setting-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.2s; }
+.setting-row:last-child { border-bottom:none; }
+.setting-row:hover { background:rgba(240,128,128,0.03); border-radius:8px; padding-left:8px; }
+.setting-icon { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:0.95rem; }
+.si-a { background:rgba(240,128,128,0.1); }
+.si-b { background:rgba(248,173,157,0.15); }
+.si-c { background:rgba(255,218,185,0.3); }
+.setting-lbl { flex:1; font-size:0.88rem; color:var(--text); font-weight:500; }
+.setting-arr { color:var(--text3); }
+
+.badges-wrap { display:flex; flex-wrap:wrap; gap:8px; }
+
+/* ════ ADMIN ════ */
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:30px; }
+.kpi-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r-sm); padding:20px; box-shadow:var(--shadow-sm); }
+.kpi-i { font-size:1.4rem; margin-bottom:8px; }
+.kpi-n { font-family:var(--font-d); font-size:2rem; color:var(--text); }
+.kpi-l { color:var(--text3); font-size:0.75rem; font-weight:500; margin-top:2px; }
+
+.admin-table { background:var(--white); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; box-shadow:var(--shadow-sm); margin-bottom:28px; }
+.t-head { display:grid; grid-template-columns:2fr 2fr 1fr 1fr; padding:12px 20px; background:rgba(240,128,128,0.04); border-bottom:1px solid var(--border); font-size:0.7rem; font-weight:700; color:var(--text3); letter-spacing:0.08em; text-transform:uppercase; }
+.t-row  { display:grid; grid-template-columns:2fr 2fr 1fr 1fr; padding:14px 20px; align-items:center; border-bottom:1px solid var(--border); transition:background 0.2s; }
+.t-row:last-child { border-bottom:none; }
+.t-row:hover { background:rgba(240,128,128,0.03); }
+.t-name { font-weight:600; color:var(--text); font-size:0.88rem; }
+.t-sub  { color:var(--text3); font-size:0.75rem; }
+.t-cell { font-size:0.85rem; color:var(--text2); }
+
+/* ════ SEND DARE ════ */
+.send-dare-box {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 28px;
+  box-shadow: var(--shadow-sm); margin-bottom: 32px;
+  position: relative; overflow: hidden;
+}
+.send-dare-box::before {
+  content: ''; position: absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, var(--c1), var(--c3), var(--c5));
+}
+.sd-form { display: flex; flex-direction: column; }
+.sd-log  { border-left: 1px solid var(--border); padding-left: 24px; max-height: 420px; overflow-y: auto; }
+.sd-log::-webkit-scrollbar { width: 3px; }
+.sd-log::-webkit-scrollbar-thumb { background: var(--c3); border-radius: 2px; }
+.dare-log-item { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 14px 16px; margin-bottom: 10px; transition: box-shadow 0.2s ease; }
+.dare-log-item:hover { box-shadow: var(--shadow-sm); }
+.dli-head  { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.dli-title { font-weight: 700; color: var(--text); font-size: 0.88rem; }
+.dli-cat   { font-size: 0.65rem; font-family: var(--font-m); color: var(--c1); background: rgba(240,128,128,0.1); padding: 2px 8px; border-radius: 100px; white-space: nowrap; flex-shrink:0; }
+.dli-desc  { color: var(--text3); font-size: 0.78rem; font-weight: 300; line-height: 1.5; margin-bottom: 8px; }
+.dli-foot  { display: flex; align-items: center; justify-content: space-between; }
+.dli-to    { font-size: 0.72rem; color: var(--text2); font-weight: 600; }
+.dli-time  { font-size: 0.68rem; color: var(--text3); font-family: var(--font-m); }
+.dli-diff  { font-size: 0.7rem; margin-top: 6px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width:768px) {
+  .send-dare-box { grid-template-columns: 1fr; }
+  .sd-log { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 20px; }
+}
+
+@media (max-width:768px) {
+  .topbar { padding:14px 20px; }
+  .page-wrap { padding:24px 20px 90px; }
+  .auth-box { padding:32px 22px; margin:16px; }
+  .form-row { grid-template-columns:1fr; }
+  .profile-grid { grid-template-columns:1fr; }
+  .t-head, .t-row { grid-template-columns:1.5fr 1fr 1fr; }
+  .t-head>*:nth-child(2),.t-row>*:nth-child(2) { display:none; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .role-grid { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:480px) {
+  .dare-grid,.rooms-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ LANDING ══════ -->
+<div class="screen active" id="s-landing">
+  <div class="landing-inner" style="margin:auto;">
+    <div class="landing-blob">🔥</div>
+    <div class="landing-title">DARE</div>
+    <div class="landing-sub">Own your story. Challenge everything.<br/>Choose how you'd like to enter.</div>
+    <div class="role-grid">
+      <div class="role-card" onclick="go('s-admin-login')">
+        <div class="role-emoji">🛡️</div>
+        <div class="role-name">Admin</div>
+        <div class="role-desc">Manage platform, users & rooms</div>
+      </div>
+      <div class="role-card" onclick="go('s-user-login')">
+        <div class="role-emoji">🌸</div>
+        <div class="role-name">User</div>
+        <div class="role-desc">Dare, grow & connect</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ ADMIN LOGIN ══════ -->
+<div class="screen auth-screen" id="s-admin-login">
+  <div class="auth-box">
+    <div class="auth-back" onclick="go('s-landing')">‹ Back</div>
+    <div class="auth-icon">🛡️</div>
+    <div class="auth-title">Admin Access</div>
+    <div class="auth-sub">Restricted portal · Authorized personnel only</div>
+    <div class="form-group">
+      <label class="form-label">Admin Email</label>
+      <input class="form-input" type="email" placeholder="admin@dare.app" id="al-email"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="••••••••" id="al-pass"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Admin Code</label>
+      <input class="form-input" type="text" placeholder="6-digit access code" maxlength="6" id="al-code"/>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="adminLogin(event)">Access Dashboard →</button>
+    <div class="auth-footer" style="margin-top:16px;font-size:0.78rem;">Forgot credentials? Contact your system administrator.</div>
+  </div>
+</div>
+
+<!-- ══════ USER LOGIN ══════ -->
+<div class="screen auth-screen" id="s-user-login">
+  <div class="auth-box">
+    <div class="auth-back" onclick="go('s-landing')">‹ Back</div>
+    <div class="auth-icon">🌸</div>
+    <div class="auth-title">Welcome Back</div>
+    <div class="auth-sub">Sign in to continue your dare journey</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input class="form-input" type="email" placeholder="you@example.com" id="ul-email"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" placeholder="••••••••" id="ul-pass"/>
+    </div>
+    <div style="text-align:right;margin-bottom:18px;"><span class="link" style="font-size:0.82rem;">Forgot password?</span></div>
+    <button class="btn btn-primary btn-full" onclick="userLogin(event)" style="margin-bottom:10px;">Sign In →</button>
+    <div class="divider">or</div>
+    <button class="btn btn-ghost btn-full" style="margin-bottom:10px;" onclick="showToast('Apple sign-in coming soon')">🍎 &nbsp;Continue with Apple</button>
+    <button class="btn btn-ghost btn-full" onclick="showToast('Google sign-in coming soon')">🌐 &nbsp;Continue with Google</button>
+    <div class="auth-footer">New here? <span class="link" onclick="go('s-signup')">Create account</span></div>
+  </div>
+</div>
+
+<!-- ══════ SIGNUP ══════ -->j
+<div class="screen auth-screen" id="s-signup">
+  <div class="auth-box">
+    <div class="auth-back" onclick="go('s-user-login')">‹ Back</div>
+    <div class="progress-steps">
+      <div class="ps-dot done"></div><div class="ps-dot done"></div><div class="ps-dot"></div>
+    </div>
+    <div class="auth-icon">✨</div>
+    <div class="auth-title">Create Account</div>
+    <div class="auth-sub">Step 2 of 3 — Tell us about yourself</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">First Name</label><input class="form-input" type="text" placeholder="First name" id="su-fn"/></div>
+      <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" type="text" placeholder="Last name" id="su-ln"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="@yourhandle" id="su-un"/></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@example.com" id="su-em"/></div>
+    <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min. 8 characters" id="su-pw"/></div>
+    <button class="btn btn-primary btn-full" onclick="signupDone(event)">Create Account & Dare →</button>
+    <div class="auth-footer" style="font-size:0.75rem;line-height:1.7;">By continuing you agree to DARE's <span class="link">Terms</span> and <span class="link">Privacy Policy</span>.</div>
+  </div>
+</div>
+
+<!-- ══════ HOME ══════ -->
+<div class="screen" id="s-home">
+  <div class="topbar">
+    <div class="topbar-logo">DARE</div>
+    <div class="topbar-right">
+      <div class="topbar-avatar" id="home-av" onclick="switchTab('s-profile',null,'Profile')">😊</div>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="home-greeting">
+      <h1 id="home-greet">Good morning 🌸</h1>
+      <p id="home-sub">Your dares are waiting</p>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Stories</div>
+    </div>
+    <div class="stories-row" id="stories-row">
+      <div class="story-item" onclick="showToast('Share your story!')">
+        <div class="story-ring" style="background:linear-gradient(135deg,#ddd,#bbb);">
+          <div class="story-inner" style="font-size:1.6rem;">➕</div>
+        </div>
+        <div class="story-label">Your Story</div>
+      </div>
+    </div>
+    <div id="stories-hint" style="color:var(--text3);font-size:0.83rem;margin-bottom:30px;font-weight:300;">
+      Follow friends to see their stories here.
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Today's Dares</div>
+      <div class="section-action" onclick="switchTab('s-rooms',null,'Rooms')">Browse Rooms →</div>
+    </div>
+    <div class="dare-grid" id="dare-grid">
+      <div class="dare-empty">
+        <div class="de-i">⚡</div>
+        <div class="de-t">No dares yet.<br/>Join a room or get challenged by a friend to see dares here.</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('s-home',this,'Home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-friends',this,'Friends')"><div class="nav-icon">👥</div><div class="nav-label">Friends</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-rooms',this,'Rooms')"><div class="nav-icon">🚪</div><div class="nav-label">Rooms</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-profile',this,'Profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<!-- ══════ FRIENDS ══════ -->
+<div class="screen" id="s-friends">
+  <div class="topbar">
+    <div class="topbar-logo">DARE</div>
+    <div class="topbar-right"><div class="topbar-avatar" onclick="switchTab('s-profile',null,'Profile')">😊</div></div>
+  </div>
+  <div class="page-wrap">
+    <div class="page-title">Friends</div>
+    <div class="page-sub">Connect with people who challenge you to grow</div>
+    <div class="add-box">
+      <h3>➕ Add a Friend</h3>
+      <p>Enter their username or email to send a friend request</p>
+      <div class="add-row">
+        <input class="form-input" placeholder="@username or email" id="af-input"/>
+        <button class="btn btn-primary btn-sm" onclick="addFriend(event)">Send Request</button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <span>🔍</span>
+      <input placeholder="Search your friends…" id="f-search" oninput="filterFriends()"/>
+    </div>
+    <div class="section-header">
+      <div class="section-title">Your Friends</div>
+      <div class="section-action" id="f-count">0 friends</div>
+    </div>
+    <div class="friends-list" id="friends-list">
+      <div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">No friends yet</div><div class="empty-sub">Add friends using the form above.</div></div>
+    </div>
+    <div class="section-header" style="margin-top:30px;">
+      <div class="section-title">Pending Requests</div>
+    </div>
+    <div class="friends-list" id="pending-list">
+      <div class="empty-state" style="padding:28px;"><div class="empty-sub" style="font-size:0.83rem;">No pending requests.</div></div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('s-home',this,'Home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item active" onclick="switchTab('s-friends',this,'Friends')"><div class="nav-icon">👥</div><div class="nav-label">Friends</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-rooms',this,'Rooms')"><div class="nav-icon">🚪</div><div class="nav-label">Rooms</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-profile',this,'Profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<!-- ══════ ROOMS ══════ -->
+<div class="screen" id="s-rooms">
+  <div class="topbar">
+    <div class="topbar-logo">DARE</div>
+    <div class="topbar-right"><div class="topbar-avatar" onclick="switchTab('s-profile',null,'Profile')">😊</div></div>
+  </div>
+  <div class="page-wrap">
+    <div class="page-title">Rooms</div>
+    <div class="page-sub">Live dare challenges — join one or create your own</div>
+    <div class="create-box">
+      <h3>🚪 Create a Room</h3>
+      <p>Host a live dare challenge and invite others to join</p>
+      <div class="form-group"><label class="form-label">Room Name</label><input class="form-input" placeholder="e.g. Friday Fear Challenge" id="r-name"/></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="What's this room about?" id="r-desc" style="min-height:70px;"></textarea></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select form-input" id="r-cat">
+            <option value="">Select category</option>
+            <option>Social</option><option>Creative</option><option>Physical</option><option>Mental</option><option>Outdoor</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Max Participants</label><input class="form-input" type="number" placeholder="e.g. 50" id="r-max" min="2"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="createRoom(event)">Create Room →</button>
+    </div>
+    <div class="rooms-tabs">
+      <div class="room-tab active" onclick="roomTab(this,'live')">Live 🔴</div>
+      <div class="room-tab" onclick="roomTab(this,'upcoming')">Upcoming</div>
+      <div class="room-tab" onclick="roomTab(this,'mine')">My Rooms</div>
+    </div>
+    <div class="rooms-grid" id="rooms-grid">
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div class="empty-icon">🚪</div>
+        <div class="empty-title">No rooms yet</div>
+        <div class="empty-sub">Create the first room above to get started.</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('s-home',this,'Home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-friends',this,'Friends')"><div class="nav-icon">👥</div><div class="nav-label">Friends</div><div class="nav-dot"></div></div>
+    <div class="nav-item active" onclick="switchTab('s-rooms',this,'Rooms')"><div class="nav-icon">🚪</div><div class="nav-label">Rooms</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-profile',this,'Profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<!-- ══════ PROFILE ══════ -->
+<div class="screen" id="s-profile">
+  <div class="topbar">
+    <div class="topbar-logo">DARE</div>
+    <div class="topbar-right"><button class="btn btn-danger btn-sm" onclick="logOut()">Sign Out</button></div>
+  </div>
+  <div class="page-wrap">
+    <div class="profile-hero">
+      <div class="profile-av" id="p-av">😊</div>
+      <div class="profile-name" id="p-name">Your Name</div>
+      <div class="profile-handle" id="p-handle">@yourhandle</div>
+      <div class="profile-edit-row">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('e-name').focus();showToast('Edit your info below 👇')">Edit Profile</button>
+      </div>
+    </div>
+    <div class="pstats">
+      <div class="pstat"><div class="pstat-n" id="ps-dares">0</div><div class="pstat-l">Dares</div></div>
+      <div class="pstat"><div class="pstat-n" id="ps-followers">0</div><div class="pstat-l">Followers</div></div>
+      <div class="pstat"><div class="pstat-n" id="ps-following">0</div><div class="pstat-l">Following</div></div>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-section">
+        <h3>📝 Edit Info</h3>
+        <div class="form-group"><label class="form-label">Display Name</label><input class="form-input" id="e-name" placeholder="Your display name"/></div>
+        <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="e-bio" placeholder="Tell the world who you are…" style="min-height:80px;"></textarea></div>
+        <button class="btn btn-primary btn-sm" onclick="saveProfile(event)">Save Changes</button>
+      </div>
+      <div class="profile-section">
+        <h3>⚙️ Settings</h3>
+        <div class="setting-row" onclick="showToast('Notifications settings')"><div class="setting-icon si-a">🔔</div><div class="setting-lbl">Notifications</div><div class="setting-arr">›</div></div>
+        <div class="setting-row" onclick="showToast('Privacy settings')"><div class="setting-icon si-b">🔒</div><div class="setting-lbl">Privacy & Security</div><div class="setting-arr">›</div></div>
+        <div class="setting-row" onclick="showToast('Identity Map — coming soon')"><div class="setting-icon si-c">🧠</div><div class="setting-lbl">My Identity Map</div><div class="setting-arr">›</div></div>
+        <div class="setting-row" onclick="showToast('Help & Support')"><div class="setting-icon si-a">❓</div><div class="setting-lbl">Help & Support</div><div class="setting-arr">›</div></div>
+      </div>
+      <div class="profile-section" style="grid-column:1/-1;">
+        <h3>🏅 Earned Badges</h3>
+        <div class="badges-wrap" id="badges-wrap">
+          <span style="color:var(--text3);font-size:0.85rem;font-weight:300;">Complete dares to earn badges. Your first badge is one dare away! ⚡</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchTab('s-home',this,'Home')"><div class="nav-icon">🏠</div><div class="nav-label">Home</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-friends',this,'Friends')"><div class="nav-icon">👥</div><div class="nav-label">Friends</div><div class="nav-dot"></div></div>
+    <div class="nav-item" onclick="switchTab('s-rooms',this,'Rooms')"><div class="nav-icon">🚪</div><div class="nav-label">Rooms</div><div class="nav-dot"></div></div>
+    <div class="nav-item active" onclick="switchTab('s-profile',this,'Profile')"><div class="nav-icon">👤</div><div class="nav-label">Profile</div><div class="nav-dot"></div></div>
+  </div>
+</div>
+
+<!-- ══════ ADMIN DASHBOARD ══════ -->
+<div class="screen" id="s-admin">
+  <div class="topbar">
+    <div class="topbar-logo">DARE</div>
+    <div class="topbar-right">
+      <div class="topbar-badge">ADMIN</div>
+      <button class="btn btn-danger btn-sm" onclick="logOut()">Sign Out</button>
+    </div>
+  </div>
+  <div class="page-wrap">
+    <div class="page-title">Dashboard</div>
+    <div class="page-sub">Real-time platform overview</div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-i">👥</div><div class="kpi-n" id="kpi-u">0</div><div class="kpi-l">Registered Users</div></div>
+      <div class="kpi-card"><div class="kpi-i">🚪</div><div class="kpi-n" id="kpi-r">0</div><div class="kpi-l">Rooms Created</div></div>
+      <div class="kpi-card"><div class="kpi-i">⚡</div><div class="kpi-n" id="kpi-d">0</div><div class="kpi-l">Dares Accepted</div></div>
+      <div class="kpi-card"><div class="kpi-i">🔗</div><div class="kpi-n" id="kpi-c">0</div><div class="kpi-l">Connections</div></div>
+    </div>
+    <!-- ⚡ SEND DARE -->
+    <div class="section-header" style="margin-bottom:16px;">
+      <div class="section-title">⚡ Send a Dare</div>
+    </div>
+    <div class="send-dare-box">
+      <div class="sd-form">
+        <div class="form-group">
+          <label class="form-label">Dare Title</label>
+          <input class="form-input" id="sd-title" placeholder="e.g. Sing out loud in public"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" id="sd-desc" placeholder="Describe the dare in detail…" style="min-height:80px;"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-select form-input" id="sd-cat">
+              <option value="">Select category</option>
+              <option>Social</option><option>Creative</option><option>Physical</option><option>Mental</option><option>Outdoor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Difficulty</label>
+            <select class="form-select form-input" id="sd-diff">
+              <option value="">Select level</option>
+              <option>Easy 🟢</option><option>Medium 🟡</option><option>Hard 🔴</option><option>Legendary 🔥</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Send To</label>
+          <select class="form-select form-input" id="sd-to">
+            <option value="all">📢 All Users</option>
+          </select>
+          <div style="font-size:0.72rem;color:var(--text3);margin-top:6px;">Users appear here after they sign up</div>
+        </div>
+        <button class="btn btn-primary" onclick="sendDare(event)" style="min-width:160px;">Send Dare ⚡</button>
+      </div>
+
+      <!-- Sent Dares Log -->
+      <div class="sd-log">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">📋 Sent Dares Log</div>
+        <div id="sd-log-list">
+          <div style="color:var(--text3);font-size:0.83rem;font-weight:300;text-align:center;padding:24px 0;">No dares sent yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:32px;"><div class="section-title">Registered Users</div></div>
+    <div class="admin-table">
+      <div class="t-head"><div>Name</div><div>Email</div><div>Joined</div><div>Status</div></div>
+      <div id="a-users"><div style="padding:40px;text-align:center;color:var(--text3);font-size:0.85rem;">No users yet. Users appear here after signing up.</div></div>
+    </div>
+    <div class="section-header" style="margin-top:8px;"><div class="section-title">Created Rooms</div></div>
+    <div class="admin-table">
+      <div class="t-head"><div>Room Name</div><div>Category</div><div>Max</div><div>Status</div></div>
+      <div id="a-rooms"><div style="padding:40px;text-align:center;color:var(--text3);font-size:0.85rem;">No rooms yet.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── STATE ── */
+const S = { currentUser:null, users:[], friends:[], rooms:[], daresAccepted:0 };
+const AVS = ['😊','🌸','🔥','⚡','🎨','🌊','🌿','🎭','🏄','🦋'];
+const RCV  = ['rc-1','rc-2','rc-3','rc-4'];
+const REMS = ['🎤','🌊','🎨','🧘','🏆','🔥','⚡','🌿'];
+let activeTab = 'live';
+let currentScreen = 's-landing';
+
+/* ── NAV ── */
+function go(id) {
+  document.getElementById(currentScreen)?.classList.remove('active');
+  document.getElementById(id)?.classList.add('active');
+  currentScreen = id;
+  window.scrollTo(0,0);
+}
+
+function switchTab(id, el, label) {
+  if (id === currentScreen) return;
+  document.getElementById(currentScreen)?.classList.remove('active');
+  document.getElementById(id)?.classList.add('active');
+  currentScreen = id;
+  window.scrollTo(0,0);
+  // Sync bottom nav in new screen
+  const scr = document.getElementById(id);
+  if (scr) {
+    scr.querySelectorAll('.nav-item').forEach(n => {
+      const lbl = n.querySelector('.nav-label')?.textContent;
+      n.classList.toggle('active', lbl === label);
+    });
+  }
+  if (id === 's-profile') renderProfile();
+  if (id === 's-admin')   renderAdmin();
+  // update avatar in all topbars
+  updateAvatars();
+}
+
+function updateAvatars() {
+  const av = S.currentUser?.avatar || '😊';
+  document.querySelectorAll('.topbar-avatar').forEach(el => el.textContent = av);
+  const homeAv = document.getElementById('home-av');
+  if (homeAv) homeAv.textContent = av;
+}
+
+/* ── AUTH ── */
+function adminLogin(e) {
+  ripple(e);
+  const em = v('al-email'), pw = v('al-pass'), cd = v('al-code');
+  if (!em||!pw||!cd) { showToast('Please fill all fields'); return; }
+  showToast('Verifying…');
+  setTimeout(() => { go('s-admin'); renderAdmin(); }, 700);
+}
+
+function userLogin(e) {
+  ripple(e);
+  const em = v('ul-email'), pw = v('ul-pass');
+  if (!em||!pw) { showToast('Please enter email and password'); return; }
+  let user = S.users.find(u => u.email === em);
+  if (!user) {
+    user = { name: em.split('@')[0], handle:'@'+em.split('@')[0].replace(/\W/g,'').toLowerCase(), email:em, avatar:AVS[Math.floor(Math.random()*AVS.length)], joinedAt:new Date().toLocaleDateString() };
+    S.users.push(user);
+  }
+  S.currentUser = user;
+  showToast('Welcome back! 🌸');
+  setTimeout(() => { go('s-home'); updateHomeGreeting(); updateAvatars(); }, 700);
+}
+
+function signupDone(e) {
+  ripple(e);
+  const fn=v('su-fn'), ln=v('su-ln'), un=v('su-un'), em=v('su-em'), pw=v('su-pw');
+  if (!fn||!un||!em||!pw) { showToast('Please fill all required fields'); return; }
+  const user = { name:`${fn} ${ln}`.trim(), handle:un.startsWith('@')?un:'@'+un, email:em, avatar:AVS[Math.floor(Math.random()*AVS.length)], joinedAt:new Date().toLocaleDateString() };
+  S.users.push(user);
+  S.currentUser = user;
+  showToast('Account created! Welcome 🎉');
+  setTimeout(() => { go('s-home'); updateHomeGreeting(); updateAvatars(); }, 800);
+}
+
+function logOut() {
+  S.currentUser = null;
+  showToast('Signed out. See you soon!');
+  setTimeout(() => go('s-landing'), 700);
+}
+
+/* ── HOME ── */
+function updateHomeGreeting() {
+  const u = S.currentUser; if(!u) return;
+  const hr = new Date().getHours();
+  const g = hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  const el = document.getElementById('home-greet');
+  if (el) el.innerHTML = `${g}, ${u.name} 🌸`;
+  const sub = document.getElementById('home-sub');
+  if (sub) sub.textContent = 'Your dares are waiting for you';
+  updateAvatars();
+  renderHomeDares();
+}
+
+/* ── FRIENDS ── */
+function addFriend(e) {
+  ripple(e);
+  const inp = document.getElementById('af-input');
+  const val = inp.value.trim();
+  if (!val) { showToast('Enter a username or email'); return; }
+  if (S.friends.find(f=>f.handle===val||f.name===val)) { showToast('Already in your list'); return; }
+  const h = val.startsWith('@')?val:'@'+val.replace('@','');
+  S.friends.push({ name:val.replace('@',''), handle:h, status:'pending', avatar:AVS[Math.floor(Math.random()*AVS.length)] });
+  inp.value = '';
+  renderFriends();
+  updateStories();
+  showToast('Friend request sent! 📩');
+}
+
+function filterFriends() {
+  renderFriends(document.getElementById('f-search').value.toLowerCase());
+}
+
+function toggleFollow(h) {
+  const f = S.friends.find(x=>x.handle===h); if(!f) return;
+  f.status = f.status==='following'?'pending':'following';
+  renderFriends();
+  updateStories();
+  showToast(f.status==='following'?'Now following 🌸':'Unfollowed');
+}
+
+function renderFriends(q='') {
+  const following = S.friends.filter(f=>f.status==='following'&&f.name.toLowerCase().includes(q));
+  const pending   = S.friends.filter(f=>f.status==='pending'&&f.name.toLowerCase().includes(q));
+  const cnt = document.getElementById('f-count');
+  if (cnt) cnt.textContent = following.length+' friend'+(following.length!==1?'s':'');
+
+  const fl = document.getElementById('friends-list');
+  fl.innerHTML = following.length===0
+    ? `<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">No friends yet</div><div class="empty-sub">Add friends using the form above.</div></div>`
+    : following.map(f=>`
+      <div class="friend-row">
+        <div class="friend-av">${f.avatar}</div>
+        <div class="friend-info"><div class="friend-name">${f.name}</div><div class="friend-handle">${f.handle}</div></div>
+        <button class="f-btn f-following" onclick="toggleFollow('${f.handle}')">Following</button>
+      </div>`).join('');
+
+  const pl = document.getElementById('pending-list');
+  pl.innerHTML = pending.length===0
+    ? `<div class="empty-state" style="padding:24px;"><div class="empty-sub" style="font-size:0.83rem;">No pending requests.</div></div>`
+    : pending.map(f=>`
+      <div class="friend-row">
+        <div class="friend-av">${f.avatar}</div>
+        <div class="friend-info"><div class="friend-name">${f.name}</div><div class="friend-handle">${f.handle} · Request sent</div></div>
+        <button class="f-btn f-follow" onclick="toggleFollow('${f.handle}')">Accept</button>
+      </div>`).join('');
+}
+
+function updateStories() {
+  const row  = document.getElementById('stories-row');
+  const hint = document.getElementById('stories-hint');
+  const following = S.friends.filter(f=>f.status==='following');
+  // keep "Your Story" item
+  const base = `<div class="story-item" onclick="showToast('Share your story!')">
+    <div class="story-ring" style="background:linear-gradient(135deg,#ddd,#bbb);"><div class="story-inner" style="font-size:1.6rem;">➕</div></div>
+    <div class="story-label">Your Story</div></div>`;
+  const items = following.map(f=>`
+    <div class="story-item">
+      <div class="story-ring"><div class="story-inner">${f.avatar}</div></div>
+      <div class="story-label">${f.name.split(' ')[0]}</div>
+    </div>`).join('');
+  row.innerHTML = base + items;
+  if (hint) hint.style.display = following.length===0?'block':'none';
+}
+
+/* ── ROOMS ── */
+function createRoom(e) {
+  ripple(e);
+  const name=v('r-name'); if(!name){showToast('Room name is required');return;}
+  const room = {
+    id:Date.now(), name, desc:v('r-desc'), cat:v('r-cat'),
+    max:v('r-max')||'∞', owner:S.currentUser?.name||'You',
+    createdAt:new Date().toLocaleDateString(), live:true, participants:1,
+    emoji:REMS[Math.floor(Math.random()*REMS.length)]
+  };
+  S.rooms.push(room);
+  ['r-name','r-desc','r-cat','r-max'].forEach(id=>{ const el=document.getElementById(id); if(el)el.value=''; });
+  renderRooms(); renderAdmin();
+  showToast('Room created! 🚪 Go live!');
+}
+
+function roomTab(el, tab) {
+  document.querySelectorAll('#s-rooms .room-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active'); activeTab=tab; renderRooms();
+}
+
+function joinRoom(id) {
+  const r=S.rooms.find(x=>x.id===id); if(r) r.participants=(r.participants||1)+1;
+  S.daresAccepted++; renderRooms(); renderProfile(); renderAdmin();
+  showToast('Joined room! 🚪');
+}
+
+function renderRooms() {
+  const grid=document.getElementById('rooms-grid'); if(!grid) return;
+  let list = S.rooms;
+  if (activeTab==='live')     list=S.rooms.filter(r=>r.live);
+  if (activeTab==='upcoming') list=S.rooms.filter(r=>!r.live);
+  if (activeTab==='mine')     list=S.rooms.filter(r=>r.owner===S.currentUser?.name);
+
+  if (list.length===0) {
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">🚪</div><div class="empty-title">No rooms here</div><div class="empty-sub">Create a room above to get started.</div></div>`;
+    return;
+  }
+  grid.innerHTML=list.map((r,i)=>`
+    <div class="room-card">
+      <div class="room-cover ${RCV[i%4]}">${r.emoji}</div>
+      <div class="room-body">
+        <div class="room-name">${r.name}</div>
+        <div class="room-desc">${r.desc||'No description.'}</div>
+        <div class="room-foot">
+          <div>${r.live?`<span class="live-pill"><span class="live-dot"></span>LIVE</span>`:
+            `<span class="badge badge-warm">Upcoming</span>`}
+            ${r.cat?`<span style="color:var(--text3);font-size:0.72rem;margin-left:8px;">${r.cat}</span>`:''}</div>
+          <span class="room-cnt">👤 ${r.participants}/${r.max}</span>
+        </div>
+        <button class="btn btn-primary btn-sm btn-full" onclick="joinRoom(${r.id})">Join Room</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ── PROFILE ── */
+function renderProfile() {
+  const u=S.currentUser; if(!u) return;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('p-av', u.avatar||'😊');
+  set('p-name', u.name||'Your Name');
+  set('p-handle', u.handle||'@yourhandle');
+  set('ps-dares', S.daresAccepted);
+  set('ps-followers', S.friends.filter(f=>f.status==='following').length);
+  set('ps-following', S.friends.filter(f=>f.status==='following').length);
+  const en=document.getElementById('e-name'); if(en&&!en.value) en.value=u.name||'';
+
+  const bw=document.getElementById('badges-wrap');
+  const badges=[];
+  if(S.daresAccepted>=1)  badges.push({i:'⚡',l:'First Dare',c:'badge-coral'});
+  if(S.daresAccepted>=5)  badges.push({i:'🔥',l:'Dare Streak ×5',c:'badge-coral'});
+  if(S.friends.filter(f=>f.status==='following').length>=1) badges.push({i:'🌸',l:'Connected',c:'badge-peach'});
+  if(S.rooms.filter(r=>r.owner===u.name).length>=1) badges.push({i:'🚪',l:'Room Creator',c:'badge-warm'});
+  bw.innerHTML=badges.length
+    ? badges.map(b=>`<span class="badge ${b.c}">${b.i} ${b.l}</span>`).join('')
+    : `<span style="color:var(--text3);font-size:0.85rem;font-weight:300;">Complete dares to earn badges. Your first badge is one dare away! ⚡</span>`;
+}
+
+function saveProfile(e) {
+  ripple(e);
+  const name=document.getElementById('e-name')?.value.trim();
+  if(!name){showToast('Name cannot be empty');return;}
+  if(S.currentUser){ S.currentUser.name=name; renderProfile(); updateHomeGreeting(); updateAvatars(); showToast('Profile saved ✓'); }
+}
+
+/* ── ADMIN ── */
+function renderAdmin() {
+  const s=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  s('kpi-u',S.users.length); s('kpi-r',S.rooms.length);
+  s('kpi-d',S.daresAccepted); s('kpi-c',S.friends.filter(f=>f.status==='following').length);
+
+  // populate Send To dropdown
+  const sdTo = document.getElementById('sd-to');
+  if (sdTo) {
+    const prev = sdTo.value;
+    sdTo.innerHTML = `<option value="all">📢 All Users</option>` +
+      S.users.map(u=>`<option value="${u.email}">${u.avatar} ${u.name} (${u.handle})</option>`).join('');
+    sdTo.value = prev || 'all';
+  }
+
+  const ub=document.getElementById('a-users');
+  ub.innerHTML=S.users.length===0
+    ? `<div style="padding:40px;text-align:center;color:var(--text3);font-size:0.85rem;">No users yet.</div>`
+    : S.users.map(u=>`<div class="t-row"><div><div class="t-name">${u.avatar} ${u.name}</div></div><div><div class="t-cell">${u.email}</div></div><div><div class="t-cell">${u.joinedAt||'—'}</div></div><div><span class="badge badge-green">Active</span></div></div>`).join('');
+
+  const rb=document.getElementById('a-rooms');
+  rb.innerHTML=S.rooms.length===0
+    ? `<div style="padding:40px;text-align:center;color:var(--text3);font-size:0.85rem;">No rooms yet.</div>`
+    : S.rooms.map(r=>`<div class="t-row"><div><div class="t-name">${r.emoji} ${r.name}</div></div><div><div class="t-cell">${r.cat||'General'}</div></div><div><div class="t-cell">${r.max}</div></div><div><span class="badge ${r.live?'badge-green':'badge-warm'}">${r.live?'Live':'Upcoming'}</span></div></div>`).join('');
+}
+
+/* ── SEND DARE ── */
+const S_dares = []; // sent dares log
+
+function sendDare(e) {
+  ripple(e);
+  const title = v('sd-title');
+  const desc  = v('sd-desc');
+  const cat   = v('sd-cat');
+  const diff  = v('sd-diff');
+  const to    = document.getElementById('sd-to')?.value || 'all';
+
+  if (!title) { showToast('Please enter a dare title'); return; }
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + ' · ' + now.toLocaleDateString();
+
+  const dare = { id: Date.now(), title, desc, cat, diff, to, sentAt: timeStr };
+  S_dares.unshift(dare);
+
+  // Inject dare into the matching user's home screen
+  const targets = to === 'all' ? S.users : S.users.filter(u => u.email === to);
+  targets.forEach(u => {
+    if (!u.inboxDares) u.inboxDares = [];
+    u.inboxDares.unshift({ ...dare });
+  });
+
+  // If logged-in user is one of the targets, show dare on Home instantly
+  if (S.currentUser) {
+    const isTarget = to === 'all' || S.currentUser.email === to;
+    if (isTarget) renderHomeDares();
+  }
+
+  // Clear fields
+  ['sd-title','sd-desc','sd-cat','sd-diff'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+
+  renderDareLog();
+  const toLabel = to === 'all' ? 'all users' : targets[0]?.name || to;
+  showToast(`Dare sent to ${toLabel}! ⚡`);
+}
+
+function renderDareLog() {
+  const log = document.getElementById('sd-log-list');
+  if (!log) return;
+  if (S_dares.length === 0) {
+    log.innerHTML = `<div style="color:var(--text3);font-size:0.83rem;font-weight:300;text-align:center;padding:24px 0;">No dares sent yet.</div>`;
+    return;
+  }
+  const diffColor = { 'Easy 🟢':'#40a060', 'Medium 🟡':'#c07020', 'Hard 🔴':'#c03030', 'Legendary 🔥':'var(--c1)' };
+  log.innerHTML = S_dares.map(d => `
+    <div class="dare-log-item">
+      <div class="dli-head">
+        <div class="dli-title">${d.title}</div>
+        ${d.cat ? `<span class="dli-cat">${d.cat}</span>` : ''}
+      </div>
+      ${d.desc ? `<div class="dli-desc">${d.desc}</div>` : ''}
+      ${d.diff ? `<div class="dli-diff" style="color:${diffColor[d.diff]||'var(--text3)'};">● ${d.diff}</div>` : ''}
+      <div class="dli-foot" style="margin-top:8px;">
+        <span class="dli-to">→ ${d.to === 'all' ? '📢 All Users' : '👤 '+( S.users.find(u=>u.email===d.to)?.name || d.to )}</span>
+        <span class="dli-time">${d.sentAt}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderHomeDares() {
+  const grid = document.getElementById('dare-grid');
+  if (!grid || !S.currentUser) return;
+  const inbox = S.currentUser.inboxDares || [];
+  if (inbox.length === 0) {
+    grid.innerHTML = `<div class="dare-empty"><div class="de-i">⚡</div><div class="de-t">No dares yet.<br/>Join a room or get challenged by a friend to see dares here.</div></div>`;
+    return;
+  }
+  const covers = ['dc-1','dc-2','dc-3'];
+  const emojis = ['⚡','🔥','🎯','🌊','🎨','🏆'];
+  grid.innerHTML = inbox.map((d,i) => `
+    <div class="dare-card">
+      <div class="dare-cover ${covers[i%3]}">${emojis[i%emojis.length]}
+        ${d.cat ? `<div class="dare-pill">${d.cat}</div>` : ''}
+      </div>
+      <div class="dare-body">
+        <div class="dare-title">${d.title}</div>
+        <div class="dare-meta">${d.desc || 'From Admin · Accept the challenge!'} ${d.diff?'· '+d.diff:''}</div>
+        <div class="dare-btns">
+          <button class="dare-accept" onclick="acceptDare(${d.id},this)">I Dare ⚡</button>
+          <button class="dare-skip"   onclick="skipDare(${d.id},this)">Skip</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function acceptDare(id, btn) {
+  S.daresAccepted++;
+  // Remove from inbox
+  if (S.currentUser?.inboxDares) S.currentUser.inboxDares = S.currentUser.inboxDares.filter(d=>d.id!==id);
+  renderHomeDares();
+  renderAdmin();
+  showToast('Dare accepted! 🔥 You got this!');
+}
+
+function skipDare(id, btn) {
+  if (S.currentUser?.inboxDares) S.currentUser.inboxDares = S.currentUser.inboxDares.filter(d=>d.id!==id);
+  renderHomeDares();
+  showToast('Dare skipped.');
+}
+
+/* ── UTILS ── */
+function v(id) { return document.getElementById(id)?.value.trim()||''; }
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+function ripple(e) {
+  const btn=e.currentTarget;
+  const r=document.createElement('div'); r.className='rip';
+  const rect=btn.getBoundingClientRect(), sz=Math.max(rect.width,rect.height)*2;
+  r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px;position:absolute;`;
+  btn.style.position='relative'; btn.appendChild(r);
+  setTimeout(()=>r.remove(),600);
+}
+
+document.querySelectorAll('.btn').forEach(b=>b.addEventListener('click',e=>ripple(e)));
+</script>
+</body>
+</html>
