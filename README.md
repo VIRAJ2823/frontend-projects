@@ -15,7 +15,7 @@ This project was created to improve frontend development skills by building real
 - 💻 Beginner-Friendly Project Structure
 - 🌐 Cross-Browser Compatibility
 
----
+
 
 # 🛠️ Tech Stack
 
