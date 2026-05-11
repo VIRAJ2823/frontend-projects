@@ -1,4 +1,4 @@
-#  Frontend Web Project
+# Frontend Web Project
 
 A modern and responsive frontend web application built using **HTML**, **CSS**, and **JavaScript**.  
 This project was created to improve frontend development skills by building real-world UI components and interactive web pages using core web technologies.
@@ -15,7 +15,7 @@ This project was created to improve frontend development skills by building real
 - 💻 Beginner-Friendly Project Structure
 - 🌐 Cross-Browser Compatibility
 
----
+
 
 # 🛠️ Tech Stack
 
