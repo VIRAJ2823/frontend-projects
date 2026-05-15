@@ -1,1391 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DARE — Own Your Story</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DARE — Own Your Story</title>
 
-<style>
-/* ═══════════════════════════════════════════════
-   CSS VARIABLES & RESET
-═══════════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-:root {
-  --bg:        #050508;
-  --bg2:       #0a0a12;
-  --surface:   rgba(255,255,255,0.04);
-  --border:    rgba(255,255,255,0.08);
-  --purple:    #7c3aed;
-  --violet:    #a855f7;
-  --blue:      #3b82f6;
-  --cyan:      #06b6d4;
-  --neon:      #c084fc;
-  --neon2:     #818cf8;
-  --pink:      #f472b6;
-  --white:     #f8fafc;
-  --muted:     rgba(248,250,252,0.45);
-  --dimmed:    rgba(248,250,252,0.22);
-  --r-sm:      12px;
-  --r-md:      20px;
-  --r-lg:      32px;
-  --glow-pu:   0 0 60px rgba(124,58,237,0.35);
-  --glow-cy:   0 0 60px rgba(6,182,212,0.3);
-  --transition: cubic-bezier(0.16,1,0.3,1);
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
-  --font-mono:    'JetBrains Mono', monospace;
-}
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=JetBrains+Mono:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
 
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
-  overflow-x: hidden;
-  cursor: none;
-}
-
-/* ═══════════════════════════════════════════════
-   CUSTOM CURSOR
-═══════════════════════════════════════════════ */
-#cursor {
-  width: 12px; height: 12px;
-  background: var(--neon);
-  border-radius: 50%;
-  position: fixed; top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9999;
-  transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
-  mix-blend-mode: screen;
-}
-#cursor-ring {
-  width: 36px; height: 36px;
-  border: 1.5px solid rgba(192,132,252,0.5);
-  border-radius: 50%;
-  position: fixed; top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9998;
-  transition: transform 0.4s var(--transition), opacity 0.3s ease;
-}
-body:has(a:hover) #cursor,
-body:has(button:hover) #cursor { width: 20px; height: 20px; background: var(--pink); }
-
-/* ═══════════════════════════════════════════════
-   NOISE GRAIN OVERLAY
-═══════════════════════════════════════════════ */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  z-index: 1000;
-}
-
-/* ═══════════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════════ */
-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 500;
-  padding: 20px 48px;
-  display: flex; align-items: center; justify-content: space-between;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  background: rgba(5,5,8,0.6);
-  border-bottom: 1px solid var(--border);
-  transition: all 0.4s var(--transition);
-}
-.nav-logo {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  letter-spacing: 0.12em;
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.nav-links { display: flex; gap: 32px; list-style: none; }
-.nav-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 0.875rem;
-  letter-spacing: 0.04em;
-  transition: color 0.3s ease;
-  cursor: none;
-}
-.nav-links a:hover { color: var(--white); }
-.nav-cta {
-  padding: 10px 24px;
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  border: none;
-  border-radius: 100px;
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: none;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s var(--transition), box-shadow 0.3s ease;
-}
-.nav-cta:hover { transform: scale(1.05); box-shadow: var(--glow-pu); }
-
-/* ═══════════════════════════════════════════════
-   SECTIONS / UTILITIES
-═══════════════════════════════════════════════ */
-section { position: relative; }
-.container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-.section-label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--violet);
-  margin-bottom: 16px;
-  display: flex; align-items: center; gap: 10px;
-}
-.section-label::before {
-  content: '';
-  width: 24px; height: 1px;
-  background: var(--violet);
-}
-
-/* ═══════════════════════════════════════════════
-   SCROLL REVEAL
-═══════════════════════════════════════════════ */
-.reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.8s var(--transition), transform 0.8s var(--transition);
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-.reveal-delay-5 { transition-delay: 0.5s; }
-
-/* ═══════════════════════════════════════════════
-   1. HERO
-═══════════════════════════════════════════════ */
-#hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  text-align: center;
-  padding: 120px 32px 80px;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Mesh gradient blobs */
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.25;
-  animation: blobFloat 8s ease-in-out infinite;
-  pointer-events: none;
-}
-.blob-1 { width: 600px; height: 600px; background: var(--purple); top: -200px; left: -100px; animation-delay: 0s; }
-.blob-2 { width: 500px; height: 500px; background: var(--blue); bottom: -100px; right: -100px; animation-delay: -3s; }
-.blob-3 { width: 350px; height: 350px; background: var(--cyan); top: 30%; left: 55%; animation-delay: -5s; }
-
-@keyframes blobFloat {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  33%       { transform: translate(20px,-30px) scale(1.05); }
-  66%       { transform: translate(-15px,15px) scale(0.97); }
-}
-
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 16px;
-  border: 1px solid rgba(168,85,247,0.4);
-  border-radius: 100px;
-  background: rgba(168,85,247,0.1);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  color: var(--violet);
-  margin-bottom: 32px;
-  position: relative;
-}
-.badge-dot {
-  width: 6px; height: 6px;
-  background: var(--neon);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(192,132,252,0.6); }
-  50%      { box-shadow: 0 0 0 8px rgba(192,132,252,0); }
-}
-
-.hero-headline {
-  font-family: var(--font-display);
-  font-size: clamp(5rem, 14vw, 13rem);
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  margin-bottom: 0;
-  position: relative;
-}
-.hero-headline .grad {
-  background: linear-gradient(135deg, #fff 30%, var(--violet) 60%, var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-sub {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 5vw, 4.5rem);
-  letter-spacing: 0.15em;
-  color: var(--muted);
-  margin-top: 8px;
-  margin-bottom: 40px;
-}
-
-.hero-body {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  color: var(--muted);
-  max-width: 560px;
-  margin: 0 auto 48px;
-  font-weight: 300;
-  line-height: 1.7;
-}
-
-.hero-cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-
-/* BUTTONS */
-.btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 16px 36px;
-  border-radius: 100px;
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 500;
-  text-decoration: none;
-  border: none;
-  cursor: none;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s var(--transition), box-shadow 0.3s ease;
-}
-.btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.12);
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.btn:hover::after { opacity: 1; }
-.btn:hover { transform: translateY(-3px); }
-.btn:active { transform: translateY(0) scale(0.97); }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--purple), var(--blue));
-  color: #fff;
-  box-shadow: 0 8px 32px rgba(124,58,237,0.4);
-}
-.btn-primary:hover { box-shadow: 0 16px 48px rgba(124,58,237,0.6); }
-
-.btn-ghost {
-  background: var(--surface);
-  color: var(--white);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(12px);
-}
-.btn-ghost:hover { border-color: rgba(168,85,247,0.5); box-shadow: var(--glow-pu); }
-
-/* RIPPLE */
-.ripple-container { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: inherit; }
-.ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.25);
-  transform: scale(0);
-  animation: rippleAnim 0.6s linear;
-  pointer-events: none;
-}
-@keyframes rippleAnim {
-  to { transform: scale(4); opacity: 0; }
-}
-
-.hero-scroll-hint {
-  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  color: var(--dimmed);
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  animation: scrollBounce 2.5s ease-in-out infinite;
-}
-.scroll-line {
-  width: 1px; height: 48px;
-  background: linear-gradient(to bottom, var(--violet), transparent);
-}
-@keyframes scrollBounce {
-  0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.4; }
-  50%      { transform: translateX(-50%) translateY(8px); opacity: 1; }
-}
-
-/* TYPING CURSOR */
-.typing-cursor {
-  display: inline-block;
-  width: 4px; height: 1em;
-  background: var(--violet);
-  margin-left: 4px;
-  vertical-align: middle;
-  animation: blink 1s step-end infinite;
-}
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-
-/* HERO STATS */
-.hero-stats {
-  display: flex; gap: 48px; justify-content: center;
-  margin-top: 72px; flex-wrap: wrap;
-}
-.stat-item { text-align: center; }
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 2.8rem;
-  letter-spacing: 0.04em;
-  background: linear-gradient(135deg, var(--white), var(--violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.stat-label {
-  font-size: 0.78rem;
-  color: var(--dimmed);
-  letter-spacing: 0.1em;
-  font-family: var(--font-mono);
-}
-
-/* ═══════════════════════════════════════════════
-   2. PROBLEM
-═══════════════════════════════════════════════ */
-#problem {
-  padding: 140px 0;
-  background: var(--bg2);
-}
-.problem-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-top: 64px;
-}
-.glass-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 40px 36px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.4s var(--transition), border-color 0.4s ease, box-shadow 0.4s ease;
-  cursor: none;
-}
-.glass-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(168,85,247,0.1) 0%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-.glass-card:hover { transform: translateY(-6px) scale(1.01); border-color: rgba(168,85,247,0.35); box-shadow: var(--glow-pu); }
-.glass-card:hover::before { opacity: 1; }
-
-.card-icon {
-  width: 52px; height: 52px;
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  margin-bottom: 24px;
-  position: relative;
-}
-.card-icon-1 { background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(59,130,246,0.3)); }
-.card-icon-2 { background: linear-gradient(135deg, rgba(244,114,182,0.3), rgba(124,58,237,0.3)); }
-.card-icon-3 { background: linear-gradient(135deg, rgba(6,182,212,0.3), rgba(59,130,246,0.3)); }
-.card-icon-4 { background: linear-gradient(135deg, rgba(168,85,247,0.3), rgba(6,182,212,0.3)); }
-
-.card-title {
-  font-family: var(--font-display);
-  font-size: 1.6rem;
-  letter-spacing: 0.04em;
-  margin-bottom: 12px;
-  color: var(--white);
-}
-.card-body { color: var(--muted); font-size: 0.95rem; line-height: 1.7; font-weight: 300; }
-
-.problem-headline {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 5rem);
-  line-height: 1;
-  letter-spacing: 0.03em;
-  max-width: 700px;
-}
-.problem-headline em {
-  font-style: normal;
-  background: linear-gradient(90deg, var(--pink), var(--violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ═══════════════════════════════════════════════
-   3. SOLUTION
-═══════════════════════════════════════════════ */
-#solution {
-  padding: 140px 0;
-  overflow: hidden;
-}
-.solution-flow {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-top: 80px;
-  position: relative;
-}
-.solution-flow::before {
-  content: '';
-  position: absolute;
-  left: 30px;
-  top: 0; bottom: 0;
-  width: 1px;
-  background: linear-gradient(to bottom, transparent, var(--purple), var(--cyan), transparent);
-}
-.flow-step {
-  display: flex; gap: 40px; align-items: flex-start;
-  padding: 40px 0;
-  position: relative;
-  opacity: 0;
-  transform: translateX(-30px);
-  transition: opacity 0.7s var(--transition), transform 0.7s var(--transition);
-}
-.flow-step.visible { opacity: 1; transform: translateX(0); }
-
-.step-num {
-  flex-shrink: 0;
-  width: 60px; height: 60px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  letter-spacing: 0.04em;
-  position: relative;
-  z-index: 2;
-}
-.step-num-1 { background: linear-gradient(135deg, var(--purple), var(--blue)); box-shadow: 0 0 30px rgba(124,58,237,0.5); }
-.step-num-2 { background: linear-gradient(135deg, var(--blue), var(--cyan)); box-shadow: 0 0 30px rgba(6,182,212,0.5); }
-.step-num-3 { background: linear-gradient(135deg, var(--cyan), var(--violet)); box-shadow: 0 0 30px rgba(168,85,247,0.5); }
-.step-num-4 { background: linear-gradient(135deg, var(--violet), var(--pink)); box-shadow: 0 0 30px rgba(244,114,182,0.5); }
-
-.step-content { padding-top: 10px; }
-.step-title {
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  letter-spacing: 0.04em;
-  margin-bottom: 12px;
-}
-.step-desc { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 600px; line-height: 1.8; }
-
-/* ═══════════════════════════════════════════════
-   4. FEATURES
-═══════════════════════════════════════════════ */
-#features {
-  padding: 140px 0;
-  background: var(--bg2);
-}
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2px;
-  margin-top: 64px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  overflow: hidden;
-}
-.feature-item {
-  padding: 48px 40px;
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
-  transition: background 0.4s ease;
-  cursor: none;
-}
-.feature-item:hover { background: rgba(168,85,247,0.05); }
-.feature-item::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--purple), var(--cyan));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s var(--transition);
-}
-.feature-item:hover::after { transform: scaleX(1); }
-
-.feature-icon-wrap {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  display: inline-block;
-  transition: transform 0.4s var(--transition);
-}
-.feature-item:hover .feature-icon-wrap { transform: scale(1.15) rotate(-5deg); }
-
-.feature-name {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  letter-spacing: 0.04em;
-  margin-bottom: 10px;
-}
-.feature-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.7; font-weight: 300; }
-
-/* ═══════════════════════════════════════════════
-   5. HOW IT WORKS — TIMELINE
-═══════════════════════════════════════════════ */
-#how {
-  padding: 140px 0;
-}
-.timeline {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0;
-  margin-top: 80px;
-  position: relative;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  top: 36px;
-  left: 10%; right: 10%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--purple), var(--cyan), transparent);
-}
-.timeline-step {
-  text-align: center;
-  padding: 0 24px;
-  position: relative;
-}
-.timeline-dot {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  margin: 0 auto 28px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem;
-  position: relative;
-  border: 2px solid var(--border);
-  background: var(--bg2);
-  transition: transform 0.4s var(--transition), border-color 0.4s ease, box-shadow 0.4s ease;
-}
-.timeline-step:hover .timeline-dot {
-  transform: scale(1.15);
-  border-color: var(--violet);
-  box-shadow: 0 0 40px rgba(168,85,247,0.5);
-}
-.timeline-step-title {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-}
-.timeline-step-desc { color: var(--muted); font-size: 0.82rem; line-height: 1.6; font-weight: 300; }
-
-/* ═══════════════════════════════════════════════
-   6. IDENTITY / AI INSIGHTS
-═══════════════════════════════════════════════ */
-#identity {
-  padding: 140px 0;
-  background: var(--bg2);
-}
-.identity-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
-  margin-top: 64px;
-}
-.identity-text {}
-.identity-text h2 {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  line-height: 1;
-  letter-spacing: 0.03em;
-  margin-bottom: 24px;
-}
-.identity-text h2 span {
-  background: linear-gradient(135deg, var(--cyan), var(--violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.identity-text p { color: var(--muted); font-size: 1.05rem; font-weight: 300; line-height: 1.8; margin-bottom: 32px; }
-
-/* AI Visualization */
-.ai-viz {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 32px;
-  backdrop-filter: blur(20px);
-  position: relative;
-  overflow: hidden;
-}
-.ai-viz::before {
-  content: '';
-  position: absolute;
-  top: -50%; right: -50%;
-  width: 200%; height: 200%;
-  background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 60%);
-  animation: rotateGlow 8s linear infinite;
-}
-@keyframes rotateGlow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.ai-header {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 28px;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--violet);
-  letter-spacing: 0.12em;
-}
-.ai-dot { width: 8px; height: 8px; background: var(--neon); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
-
-.trait-bars { display: flex; flex-direction: column; gap: 16px; }
-.trait-row { display: flex; flex-direction: column; gap: 6px; }
-.trait-meta { display: flex; justify-content: space-between; font-size: 0.8rem; }
-.trait-name { color: var(--muted); font-weight: 300; }
-.trait-val { color: var(--violet); font-family: var(--font-mono); font-size: 0.72rem; }
-.trait-track {
-  height: 6px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 100px;
-  overflow: hidden;
-}
-.trait-fill {
-  height: 100%;
-  border-radius: 100px;
-  width: 0;
-  transition: width 1.5s var(--transition);
-}
-
-.insight-tags {
-  display: flex; flex-wrap: wrap; gap: 8px;
-  margin-top: 24px;
-}
-.insight-tag {
-  padding: 6px 14px;
-  border-radius: 100px;
-  font-size: 0.75rem;
-  font-family: var(--font-mono);
-  letter-spacing: 0.06em;
-  border: 1px solid;
-  animation: tagFloat 4s ease-in-out infinite;
-}
-.tag-1 { border-color: rgba(168,85,247,0.5); color: var(--violet); background: rgba(168,85,247,0.08); animation-delay: 0s; }
-.tag-2 { border-color: rgba(6,182,212,0.5); color: var(--cyan); background: rgba(6,182,212,0.08); animation-delay: -0.8s; }
-.tag-3 { border-color: rgba(244,114,182,0.5); color: var(--pink); background: rgba(244,114,182,0.08); animation-delay: -1.6s; }
-.tag-4 { border-color: rgba(59,130,246,0.5); color: var(--blue); background: rgba(59,130,246,0.08); animation-delay: -2.4s; }
-.tag-5 { border-color: rgba(192,132,252,0.5); color: var(--neon); background: rgba(192,132,252,0.08); animation-delay: -3.2s; }
-
-@keyframes tagFloat {
-  0%,100% { transform: translateY(0); }
-  50%      { transform: translateY(-3px); }
-}
-
-/* ═══════════════════════════════════════════════
-   7. VIRAL LOOP
-═══════════════════════════════════════════════ */
-#viral {
-  padding: 140px 0;
-  text-align: center;
-}
-.viral-headline {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 8vw, 7rem);
-  line-height: 0.95;
-  letter-spacing: 0.03em;
-  margin-bottom: 24px;
-}
-.viral-headline .outline {
-  -webkit-text-stroke: 1.5px var(--violet);
-  -webkit-text-fill-color: transparent;
-}
-
-.viral-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  margin: 64px 0;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.viral-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 32px 24px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.4s var(--transition), border-color 0.4s ease;
-  cursor: none;
-}
-.viral-card:hover { transform: scale(1.04); border-color: rgba(168,85,247,0.4); }
-.viral-card-num {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  letter-spacing: 0.04em;
-  background: linear-gradient(135deg, var(--violet), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.viral-card-label { color: var(--muted); font-size: 0.85rem; margin-top: 4px; font-weight: 300; }
-
-.challenge-btn {
-  display: inline-flex; align-items: center; gap: 12px;
-  padding: 20px 48px;
-  border-radius: 100px;
-  background: linear-gradient(135deg, var(--pink), var(--violet), var(--blue));
-  background-size: 200% 200%;
-  animation: gradShift 4s ease infinite;
-  border: none;
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  letter-spacing: 0.06em;
-  cursor: none;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s var(--transition), box-shadow 0.3s ease;
-}
-.challenge-btn:hover { transform: scale(1.04) translateY(-4px); box-shadow: 0 20px 60px rgba(168,85,247,0.5); }
-
-@keyframes gradShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ═══════════════════════════════════════════════
-   8. CTA
-═══════════════════════════════════════════════ */
-#cta {
-  padding: 160px 0;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-#cta .blob { opacity: 0.15; }
-
-.cta-headline {
-  font-family: var(--font-display);
-  font-size: clamp(3.5rem, 10vw, 9rem);
-  line-height: 0.9;
-  letter-spacing: 0.02em;
-  margin-bottom: 32px;
-}
-.cta-headline .grad {
-  background: linear-gradient(135deg, var(--white) 0%, var(--violet) 50%, var(--cyan) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.cta-sub { color: var(--muted); font-size: 1.15rem; max-width: 500px; margin: 0 auto 48px; font-weight: 300; }
-
-.email-form {
-  display: flex; gap: 12px; justify-content: center;
-  flex-wrap: wrap;
-  max-width: 560px;
-  margin: 0 auto;
-}
-.email-input {
-  flex: 1; min-width: 240px;
-  padding: 16px 24px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  outline: none;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  backdrop-filter: blur(12px);
-}
-.email-input::placeholder { color: var(--dimmed); }
-.email-input:focus { border-color: rgba(168,85,247,0.6); box-shadow: 0 0 24px rgba(168,85,247,0.2); }
-
-/* ═══════════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════════ */
-footer {
-  padding: 40px 0;
-  border-top: 1px solid var(--border);
-  text-align: center;
-  color: var(--dimmed);
-  font-size: 0.8rem;
-  font-family: var(--font-mono);
-  letter-spacing: 0.08em;
-}
-footer span {
-  background: linear-gradient(90deg, var(--violet), var(--cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ═══════════════════════════════════════════════
-   SCROLLBAR
-═══════════════════════════════════════════════ */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 2px; }
-
-/* ═══════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  nav { padding: 16px 20px; }
-  .nav-links { display: none; }
-  .container { padding: 0 20px; }
-  .identity-layout { grid-template-columns: 1fr; gap: 48px; }
-  .viral-grid { grid-template-columns: 1fr; max-width: 400px; }
-  .timeline::before { display: none; }
-  .solution-flow::before { display: none; }
-  .flow-step { gap: 20px; }
-  body { cursor: auto; }
-  #cursor, #cursor-ring { display: none; }
-}
-@media (max-width: 480px) {
-  .hero-stats { gap: 28px; }
-  .features-grid { grid-template-columns: 1fr; }
-}
-</style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
-<!-- CURSOR -->
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
+  <!-- CURSOR -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">DARE</div>
-  <ul class="nav-links">
-    <li><a href="#problem">Problem</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#how">How It Works</a></li>
-    <li><a href="#viral">Challenge</a></li>
-  </ul>
-  <button class="nav-cta" onclick="ripple(event,this)">
-    <div class="ripple-container"></div>
-    Get Early Access
-  </button>
-</nav>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">DARE</div>
 
-<!-- ══════════ 1. HERO ══════════ -->
-<section id="hero">
-  <div class="blob blob-1"></div>
-  <div class="blob blob-2"></div>
-  <div class="blob blob-3"></div>
+    <ul class="nav-links">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How It Works</a></li>
+      <li><a href="#viral">Challenge</a></li>
+    </ul>
 
-  <div class="hero-badge">
-    <div class="badge-dot"></div>
-    Now in Private Beta
-  </div>
-
-  <h1 class="hero-headline">
-    <span class="grad" id="typing-text"></span><span class="typing-cursor" id="typing-cursor"></span>
-  </h1>
-  <p class="hero-sub">YOUR STORY. AMPLIFIED.</p>
-
-  <p class="hero-body">
-    DARE is the identity platform built for a generation that refuses to be defined by a follower count. Discover who you really are — and challenge the world to keep up.
-  </p>
-
-  <div class="hero-cta-group">
-    <button class="btn btn-primary" onclick="ripple(event,this)">
+    <button class="nav-cta" onclick="ripple(event,this)">
       <div class="ripple-container"></div>
-      Start Your Dare ↗
+      Get Early Access
     </button>
-    <button class="btn btn-ghost" onclick="ripple(event,this)">
-      <div class="ripple-container"></div>
-      Watch the Demo ▶
-    </button>
-  </div>
+  </nav>
 
-  <div class="hero-stats">
-    <div class="stat-item">
-      <div class="stat-num" data-count="2.4" data-suffix="M+">0</div>
-      <div class="stat-label">Dares Completed</div>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      Now in Private Beta
     </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="840" data-suffix="K+">0</div>
-      <div class="stat-label">Active Challengers</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="98" data-suffix="%">0</div>
-      <div class="stat-label">Would Do It Again</div>
-    </div>
-  </div>
 
-  <div class="hero-scroll-hint">
-    <div class="scroll-line"></div>
-    SCROLL
-  </div>
-</section>
+    <h1 class="hero-headline">
+      <span class="grad" id="typing-text"></span>
+      <span class="typing-cursor" id="typing-cursor"></span>
+    </h1>
 
-<!-- ══════════ 2. PROBLEM ══════════ -->
-<section id="problem">
-  <div class="container">
-    <div class="section-label reveal">The Problem</div>
-    <h2 class="problem-headline reveal reveal-delay-1">
-      You're more than<br/>your <em>algorithm.</em>
-    </h2>
+    <p class="hero-sub">YOUR STORY. AMPLIFIED.</p>
 
-    <div class="problem-grid">
-      <div class="glass-card reveal reveal-delay-1" onmousemove="cardGlow(event,this)">
-        <div class="card-icon card-icon-1">🎭</div>
-        <div class="card-title">Fake Personas</div>
-        <p class="card-body">Platforms reward performance, not authenticity. You've been optimizing for likes, not living.</p>
-      </div>
-      <div class="glass-card reveal reveal-delay-2" onmousemove="cardGlow(event,this)">
-        <div class="card-icon card-icon-2">🔁</div>
-        <div class="card-title">Echo Chambers</div>
-        <p class="card-body">Your feed only shows you what you already believe. Real growth happens at the edge of your comfort zone.</p>
-      </div>
-      <div class="glass-card reveal reveal-delay-3" onmousemove="cardGlow(event,this)">
-        <div class="card-icon card-icon-3">📉</div>
-        <div class="card-title">Metric Obsession</div>
-        <p class="card-body">Follower counts, watch time, engagement rate — none of it tells you who you actually are.</p>
-      </div>
-      <div class="glass-card reveal reveal-delay-4" onmousemove="cardGlow(event,this)">
-        <div class="card-icon card-icon-4">🤖</div>
-        <div class="card-title">AI Without Soul</div>
-        <p class="card-body">Every "personalization" engine strips away individuality. You become data. DARE gives you back your narrative.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ 3. SOLUTION ══════════ -->
-<section id="solution">
-  <div class="container">
-    <div class="section-label reveal">Our Solution</div>
-    <h2 class="problem-headline reveal reveal-delay-1" style="max-width:800px;">How DARE rewrites<br/>the playbook</h2>
-
-    <div class="solution-flow">
-      <div class="flow-step">
-        <div class="step-num step-num-1">01</div>
-        <div class="step-content">
-          <div class="step-title">REVEAL</div>
-          <p class="step-desc">Our AI engine analyzes your real behaviors — not curated posts — to build your authentic identity map. No filters. No performance. Just truth.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num step-num-2">02</div>
-        <div class="step-content">
-          <div class="step-title">DARE</div>
-          <p class="step-desc">Get hyper-personalized challenges designed to push exactly the right boundaries. Each dare is engineered to expand your real world, not your digital one.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num step-num-3">03</div>
-        <div class="step-content">
-          <div class="step-title">GROW</div>
-          <p class="step-desc">Track genuine evolution over time. Watch your identity map shift and complexify. Understand yourself through action, not self-reporting.</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="step-num step-num-4">04</div>
-        <div class="step-content">
-          <div class="step-title">CHALLENGE</div>
-          <p class="step-desc">Dare your friends, rivals, or strangers. Create chains of challenge that go viral — not because they're absurd, but because they're profoundly human.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ 4. FEATURES ══════════ -->
-<section id="features">
-  <div class="container">
-    <div class="section-label reveal">Features</div>
-    <h2 class="problem-headline reveal reveal-delay-1" style="max-width:600px;">Everything you need.<br/>Nothing you don't.</h2>
-
-    <div class="features-grid reveal reveal-delay-2">
-      <div class="feature-item">
-        <div class="feature-icon-wrap">🧠</div>
-        <div class="feature-name">Identity Engine</div>
-        <p class="feature-desc">Proprietary AI maps 47 personality dimensions from real behavioral data, not self-assessments.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon-wrap">⚡</div>
-        <div class="feature-name">Live Challenges</div>
-        <p class="feature-desc">Real-time dare matching across your social graph and beyond. Every 24 hours, a new frontier.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon-wrap">🌐</div>
-        <div class="feature-name">Viral Chains</div>
-        <p class="feature-desc">Dare chains propagate across networks with cryptographic attribution — your legacy, tracked forever.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon-wrap">🎯</div>
-        <div class="feature-name">Precision Matching</div>
-        <p class="feature-desc">Connect with people who complement, challenge, and expand your identity — not just validate it.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon-wrap">🔒</div>
-        <div class="feature-name">Privacy First</div>
-        <p class="feature-desc">Your data is yours. End-to-end encrypted identity vault. Zero ads. Zero data selling. Ever.</p>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon-wrap">📈</div>
-        <div class="feature-name">Growth Tracking</div>
-        <p class="feature-desc">Longitudinal identity analytics that show how you've evolved — week by week, dare by dare.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ 5. HOW IT WORKS ══════════ -->
-<section id="how">
-  <div class="container">
-    <div class="section-label reveal">How It Works</div>
-    <h2 class="problem-headline reveal reveal-delay-1" style="max-width:640px;">Five steps.<br/>Infinite transformation.</h2>
-
-    <div class="timeline">
-      <div class="timeline-step reveal reveal-delay-1">
-        <div class="timeline-dot">🎨</div>
-        <div class="timeline-step-title">CREATE</div>
-        <p class="timeline-step-desc">Sign up and build your baseline identity canvas in under 3 minutes.</p>
-      </div>
-      <div class="timeline-step reveal reveal-delay-2">
-        <div class="timeline-dot">🔍</div>
-        <div class="timeline-step-title">ANALYZE</div>
-        <p class="timeline-step-desc">AI scans your behavioral signals to generate your authentic identity map.</p>
-      </div>
-      <div class="timeline-step reveal reveal-delay-3">
-        <div class="timeline-dot">🎲</div>
-        <div class="timeline-step-title">DARE</div>
-        <p class="timeline-step-desc">Receive your first personalized dare. Accept, modify, or escalate.</p>
-      </div>
-      <div class="timeline-step reveal reveal-delay-4">
-        <div class="timeline-dot">📲</div>
-        <div class="timeline-step-title">SHARE</div>
-        <p class="timeline-step-desc">Challenge your circle. Watch the chain reaction ignite.</p>
-      </div>
-      <div class="timeline-step reveal reveal-delay-5">
-        <div class="timeline-dot">🚀</div>
-        <div class="timeline-step-title">EVOLVE</div>
-        <p class="timeline-step-desc">Your identity map updates in real-time. Become who you're meant to be.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ 6. IDENTITY / AI ══════════ -->
-<section id="identity">
-  <div class="container">
-    <div class="identity-layout">
-      <div class="identity-text reveal">
-        <div class="section-label">Identity System</div>
-        <h2>Your AI<br/><span>Identity Map</span></h2>
-        <p>DARE's engine doesn't just categorize you — it understands you. 47 dynamic dimensions. Real-time updates. A living portrait that grows more accurate with every dare you complete.</p>
-        <button class="btn btn-primary" onclick="ripple(event,this)">
-          <div class="ripple-container"></div>
-          Unlock Your Map →
-        </button>
-      </div>
-
-      <div class="ai-viz reveal reveal-delay-2" id="ai-viz">
-        <div class="ai-header">
-          <div class="ai-dot"></div>
-          DARE.AI — IDENTITY ANALYSIS RUNNING
-        </div>
-        <div class="trait-bars">
-          <div class="trait-row">
-            <div class="trait-meta">
-              <span class="trait-name">Creative Courage</span>
-              <span class="trait-val">94%</span>
-            </div>
-            <div class="trait-track"><div class="trait-fill" data-width="94" style="background: linear-gradient(90deg, #7c3aed, #a855f7);"></div></div>
-          </div>
-          <div class="trait-row">
-            <div class="trait-meta">
-              <span class="trait-name">Social Adaptability</span>
-              <span class="trait-val">78%</span>
-            </div>
-            <div class="trait-track"><div class="trait-fill" data-width="78" style="background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div></div>
-          </div>
-          <div class="trait-row">
-            <div class="trait-meta">
-              <span class="trait-name">Risk Appetite</span>
-              <span class="trait-val">87%</span>
-            </div>
-            <div class="trait-track"><div class="trait-fill" data-width="87" style="background: linear-gradient(90deg, #f472b6, #7c3aed);"></div></div>
-          </div>
-          <div class="trait-row">
-            <div class="trait-meta">
-              <span class="trait-name">Empathy Depth</span>
-              <span class="trait-val">91%</span>
-            </div>
-            <div class="trait-track"><div class="trait-fill" data-width="91" style="background: linear-gradient(90deg, #06b6d4, #818cf8);"></div></div>
-          </div>
-          <div class="trait-row">
-            <div class="trait-meta">
-              <span class="trait-name">Intellectual Curiosity</span>
-              <span class="trait-val">96%</span>
-            </div>
-            <div class="trait-track"><div class="trait-fill" data-width="96" style="background: linear-gradient(90deg, #c084fc, #3b82f6);"></div></div>
-          </div>
-        </div>
-        <div class="insight-tags">
-          <span class="insight-tag tag-1">Visionary</span>
-          <span class="insight-tag tag-2">Connector</span>
-          <span class="insight-tag tag-3">Disruptor</span>
-          <span class="insight-tag tag-4">Builder</span>
-          <span class="insight-tag tag-5">Empath</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════ 7. VIRAL LOOP ══════════ -->
-<section id="viral">
-  <div class="container">
-    <div class="section-label reveal" style="justify-content:center;">Viral Loop</div>
-    <h2 class="viral-headline reveal reveal-delay-1">
-      <span class="outline">Challenge</span><br/>
-      Everything.
-    </h2>
-    <p class="hero-body reveal reveal-delay-2" style="margin: 0 auto;">
-      Every dare you complete automatically generates a challenge for 3 people in your network. One action, infinite ripples.
+    <p class="hero-body">
+      DARE is the identity platform built for a generation that refuses
+      to be defined by a follower count. Discover who you really are —
+      and challenge the world to keep up.
     </p>
 
-    <div class="viral-grid">
-      <div class="viral-card reveal reveal-delay-1">
-        <div class="viral-card-num" data-count="1" data-suffix="">1</div>
-        <div class="viral-card-label">Dare You Accept</div>
-      </div>
-      <div class="viral-card reveal reveal-delay-2">
-        <div class="viral-card-num" data-count="3" data-suffix="">3</div>
-        <div class="viral-card-label">Friends Challenged</div>
-      </div>
-      <div class="viral-card reveal reveal-delay-3">
-        <div class="viral-card-num" data-count="729" data-suffix="+">0</div>
-        <div class="viral-card-label">Potential Reach (6 layers)</div>
-      </div>
-    </div>
-
-    <button class="challenge-btn reveal reveal-delay-4" onclick="ripple(event,this)">
-      <div class="ripple-container"></div>
-      DARE A FRIEND ↗
-    </button>
-  </div>
-</section>
-
-<!-- ══════════ 8. CTA ══════════ -->
-<section id="cta">
-  <div class="blob blob-1" style="top:-100px;left:20%;opacity:0.12;"></div>
-  <div class="blob blob-2" style="bottom:-100px;right:20%;opacity:0.12;"></div>
-  <div class="container" style="position:relative;z-index:2;">
-    <div class="section-label reveal" style="justify-content:center;">Ready?</div>
-    <h2 class="cta-headline reveal reveal-delay-1">
-      <span class="grad">Your Dare<br/>Awaits.</span>
-    </h2>
-    <p class="cta-sub reveal reveal-delay-2">
-      Join 840,000+ challengers who stopped performing and started living. Early access is now open.
-    </p>
-    <div class="email-form reveal reveal-delay-3">
-      <input type="email" class="email-input" placeholder="your@email.com" />
+    <div class="hero-cta-group">
       <button class="btn btn-primary" onclick="ripple(event,this)">
         <div class="ripple-container"></div>
-        I DARE TO JOIN
+        Start Your Dare ↗
+      </button>
+
+      <button class="btn btn-ghost" onclick="ripple(event,this)">
+        <div class="ripple-container"></div>
+        Watch the Demo ▶
       </button>
     </div>
-  </div>
-</section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="container">
-    <p>© 2025 <span>DARE</span> — Own Your Story. Built for the generation that refuses to be average.</p>
-  </div>
-</footer>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" data-count="2.4" data-suffix="M+">0</div>
+        <div class="stat-label">Dares Completed</div>
+      </div>
 
-<script>
-/* ═══════════════════════════════════════════════
-   CUSTOM CURSOR
-═══════════════════════════════════════════════ */
-const cursor = document.getElementById('cursor');
-const ring   = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
+      <div class="stat-item">
+        <div class="stat-num" data-count="840" data-suffix="K+">0</div>
+        <div class="stat-label">Active Challengers</div>
+      </div>
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
-});
+      <div class="stat-item">
+        <div class="stat-num" data-count="98" data-suffix="%">0</div>
+        <div class="stat-label">Would Do It Again</div>
+      </div>
+    </div>
 
-function animateRing() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
-  requestAnimationFrame(animateRing);
-}
-animateRing();
+    <div class="hero-scroll-hint">
+      <div class="scroll-line"></div>
+      SCROLL
+    </div>
+  </section>
 
-/* ═══════════════════════════════════════════════
-   TYPING EFFECT
-═══════════════════════════════════════════════ */
-const words  = ['DARE', 'GROW', 'LIVE', 'RISE', 'DARE'];
-const target = document.getElementById('typing-text');
-let wi = 0, ci = 0, deleting = false;
+  <!-- PROBLEM -->
+  <section id="problem">
+    <div class="container">
 
-function typeStep() {
-  const word = words[wi % words.length];
-  if (!deleting) {
-    target.textContent = word.slice(0, ++ci);
-    if (ci === word.length) { deleting = true; setTimeout(typeStep, 1800); return; }
-  } else {
-    target.textContent = word.slice(0, --ci);
-    if (ci === 0) { deleting = false; wi++; setTimeout(typeStep, 300); return; }
-  }
-  setTimeout(typeStep, deleting ? 60 : 100);
-}
-typeStep();
+      <div class="section-label reveal">The Problem</div>
 
-/* ═══════════════════════════════════════════════
-   SCROLL REVEAL
-═══════════════════════════════════════════════ */
-const reveals = document.querySelectorAll('.reveal');
-const flowSteps = document.querySelectorAll('.flow-step');
+      <h2 class="problem-headline reveal reveal-delay-1">
+        You're more than<br />
+        your <em>algorithm.</em>
+      </h2>
 
-const revealObs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.15 });
+      <div class="problem-grid">
 
-reveals.forEach(el => revealObs.observe(el));
-flowSteps.forEach(el => revealObs.observe(el));
+        <div class="glass-card reveal reveal-delay-1" onmousemove="cardGlow(event,this)">
+          <div class="card-icon card-icon-1">🎭</div>
+          <div class="card-title">Fake Personas</div>
+          <p class="card-body">
+            Platforms reward performance, not authenticity.
+          </p>
+        </div>
 
-/* ═══════════════════════════════════════════════
-   ANIMATED COUNTERS
-═══════════════════════════════════════════════ */
-function animateCounter(el) {
-  const target = parseFloat(el.dataset.count);
-  const suffix = el.dataset.suffix || '';
-  const isFloat = target % 1 !== 0;
-  const duration = 2000;
-  const start = performance.now();
+        <div class="glass-card reveal reveal-delay-2" onmousemove="cardGlow(event,this)">
+          <div class="card-icon card-icon-2">🔁</div>
+          <div class="card-title">Echo Chambers</div>
+          <p class="card-body">
+            Real growth happens at the edge of your comfort zone.
+          </p>
+        </div>
 
-  function update(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    const val = target * ease;
-    el.textContent = (isFloat ? val.toFixed(1) : Math.round(val)) + suffix;
-    if (progress < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
-}
+        <div class="glass-card reveal reveal-delay-3" onmousemove="cardGlow(event,this)">
+          <div class="card-icon card-icon-3">📉</div>
+          <div class="card-title">Metric Obsession</div>
+          <p class="card-body">
+            Follower counts don't define who you really are.
+          </p>
+        </div>
 
-const counterObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.animated) {
-      e.target.dataset.animated = '1';
-      animateCounter(e.target);
-    }
-  });
-}, { threshold: 0.5 });
+      </div>
 
-document.querySelectorAll('[data-count]').forEach(el => counterObs.observe(el));
+    </div>
+  </section>
 
-/* ═══════════════════════════════════════════════
-   AI TRAIT BARS ANIMATION
-═══════════════════════════════════════════════ */
-const vizObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      document.querySelectorAll('.trait-fill').forEach((fill, i) => {
-        setTimeout(() => {
-          fill.style.width = fill.dataset.width + '%';
-        }, i * 150);
-      });
-      vizObs.disconnect();
-    }
-  });
-}, { threshold: 0.3 });
+  <!-- CTA -->
+  <section id="cta">
+    <div class="container">
 
-const viz = document.getElementById('ai-viz');
-if (viz) vizObs.observe(viz);
+      <div class="section-label reveal" style="justify-content:center;">
+        Ready?
+      </div>
 
-/* ═══════════════════════════════════════════════
-   RIPPLE EFFECT
-═══════════════════════════════════════════════ */
-function ripple(e, btn) {
-  const container = btn.querySelector('.ripple-container');
-  if (!container) return;
-  const rect = btn.getBoundingClientRect();
-  const r = document.createElement('div');
-  r.className = 'ripple';
-  const size = Math.max(rect.width, rect.height) * 2;
-  r.style.cssText = `
-    width:${size}px; height:${size}px;
-    left:${e.clientX - rect.left - size/2}px;
-    top:${e.clientY - rect.top - size/2}px;
-  `;
-  container.appendChild(r);
-  setTimeout(() => r.remove(), 700);
-}
+      <h2 class="cta-headline reveal reveal-delay-1">
+        <span class="grad">Your Dare Awaits.</span>
+      </h2>
 
-/* ═══════════════════════════════════════════════
-   GLASS CARD GLOW ON MOUSE
-═══════════════════════════════════════════════ */
-function cardGlow(e, card) {
-  const rect = card.getBoundingClientRect();
-  const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-  const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-  card.style.setProperty('--mx', x + '%');
-  card.style.setProperty('--my', y + '%');
-}
+      <p class="cta-sub reveal reveal-delay-2">
+        Join thousands of challengers who stopped performing and started living.
+      </p>
 
-document.addEventListener('mousemove', e => {
-  const cx = (e.clientX / window.innerWidth - 0.5) * 30;
-  const cy = (e.clientY / window.innerHeight - 0.5) * 30;
-  document.querySelectorAll('.blob').forEach((b, i) => {
-    const d = (i + 1) * 0.5;
-    b.style.transform = `translate(${cx * d}px, ${cy * d}px)`;
-  });
-});
+      <div class="email-form reveal reveal-delay-3">
 
-/* NAV SCROLL EFFECT */
-window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
-  nav.style.background = window.scrollY > 60
-    ? 'rgba(5,5,8,0.92)'
-    : 'rgba(5,5,8,0.6)';
-});
-</script>
+        <input
+          type="email"
+          class="email-input"
+          placeholder="your@email.com"
+        />
+
+        <button class="btn btn-primary" onclick="ripple(event,this)">
+          <div class="ripple-container"></div>
+          I DARE TO JOIN
+        </button>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>
+        © 2025 <span>DARE</span> — Own Your Story.
+      </p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
